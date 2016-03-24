@@ -25,6 +25,7 @@ Use the `@SuppressLint("RxSubscribeOnError")` annotation, [lint.xml][3] or use `
 Refer to the [tools documentation on lint][3] for more info.
 
 # License
+
 ```
 /*
  *    Copyright 2016 Little Robots
