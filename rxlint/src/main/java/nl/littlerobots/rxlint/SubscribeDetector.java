@@ -48,10 +48,14 @@ public class SubscribeDetector extends Detector implements Detector.JavaScanner 
     @Override
     public void visitMethod(JavaContext context, AstVisitor visitor, MethodInvocation node) {
         super.visitMethod(context, visitor, node);
-        JavaParser.ResolvedMethod resolvedNode = (JavaParser.ResolvedMethod) context.resolve(node);
-        if (resolvedNode.getContainingClass().isSubclassOf("rx.Observable", false) &&
-                resolvedNode.getArgumentCount() == 1 &&
-                resolvedNode.getArgumentType(0).getSignature().startsWith("rx.functions.Action1")) {
+        Object resolvedNode = context.resolve(node);
+        if (!(resolvedNode instanceof JavaParser.ResolvedMethod)) {
+            return;
+        }
+        JavaParser.ResolvedMethod resolvedMethod = (JavaParser.ResolvedMethod) resolvedNode;
+        if (resolvedMethod.getContainingClass().isSubclassOf("rx.Observable", false) &&
+                resolvedMethod.getArgumentCount() == 1 &&
+                resolvedMethod.getArgumentType(0).getSignature().startsWith("rx.functions.Action1")) {
             context.report(ISSUE, node, context.getLocation(node), "Subscriber is missing onError");
         }
     }
