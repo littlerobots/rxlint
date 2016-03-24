@@ -42,7 +42,7 @@ Refer to the [tools documentation on lint][3] for more info.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
- ```
+```
 
 [1]:https://github.com/ReactiveX/RxJava
 [2]:http://reactivex.io/RxJava/javadoc/rx/schedulers/Schedulers.html
