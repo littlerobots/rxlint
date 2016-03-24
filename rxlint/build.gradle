@@ -1,28 +1,21 @@
-apply plugin: 'java'
+apply plugin: 'com.android.library'
+apply from: rootProject.file('gradle/maven-publish.gradle')
 
-sourceCompatibility = 1.6
+android {
+    compileSdkVersion 23
+    buildToolsVersion "21.1.2"
 
-dependencies {
-    compile 'com.android.tools.lint:lint-api:24.5.0'
-    compile 'com.android.tools.lint:lint-checks:24.5.0'
-    testCompile 'junit:junit:4.11'
-    testCompile 'com.android.tools.lint:lint:24.5.0'
-    testCompile 'com.android.tools.lint:lint-tests:24.5.0'
-    testCompile 'com.android.tools:testutils:24.5.0'
-    compile 'io.reactivex:rxjava:1.1.1'
-    testCompile 'io.reactivex:rxjava:1.1.1'
-}
-
-sourceSets {
-    test {
-        // seem to need this to make sure the resources end up in the right place for tests
-        output.resourcesDir = "build/classes/test"
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
     }
-}
-
-jar {
-    manifest {
-        attributes("Lint-Registry": "nl.littlerobots.rxlint.RxIssueRegistry")
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
 }
 
@@ -31,7 +24,21 @@ configurations {
 }
 
 dependencies {
-    lintChecks files(jar)
+    lintChecks project(path: ':detector', configuration: "lintChecks")
 }
 
-defaultTasks 'assemble'
+task copyLintJar(type: Copy) {
+    from(configurations.lintChecks) {
+        rename {
+            String fileName ->
+                'lint.jar'
+        }
+    }
+    into 'build/intermediates/lint/'
+}
+
+
+project.afterEvaluate {
+    def compileLintTask = project.tasks.find { it.name == 'compileLint' }
+    compileLintTask.dependsOn(copyLintJar)
+}
