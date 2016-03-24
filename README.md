@@ -6,7 +6,7 @@
 By default, [rxjava][1] will throw an `OnErrorNotImplemented` exception wrapped in an `IllegalStateException` for every error that is not handled.
 When subscribing on a [Scheduler][2], like `Schedulers.io()` the error will be thrown on the scheduler thread and the stack trace will have no reference to the place where you subscribed.
 
-TL;DR; you should handle `onError`.
+TL;DR you should handle `onError`.
 
 ## Using
 
@@ -21,10 +21,11 @@ Once added to your project an error will be shown like this:
 
 ### Ignoring errors
 
-Use the `@SuppressLint("RxSubscribeOnError")` annotation, [lint.xml][2] or use `//noinspection AndroidLintCustomError`.
-Refer to the [tools documentation on lint][2] for more info.
+Use the `@SuppressLint("RxSubscribeOnError")` annotation, [lint.xml][3] or use `//noinspection AndroidLintCustomError`.
+Refer to the [tools documentation on lint][3] for more info.
 
 # License
+```
 /*
  *    Copyright 2016 Little Robots
  *
@@ -40,6 +41,8 @@ Refer to the [tools documentation on lint][2] for more info.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+ ```
 
 [1]:https://github.com/ReactiveX/RxJava
-[2]:http://tools.android.com/tips/lint/suppressing-lint-warnings
+[2]:http://reactivex.io/RxJava/javadoc/rx/schedulers/Schedulers.html
+[3]:http://tools.android.com/tips/lint/suppressing-lint-warnings
