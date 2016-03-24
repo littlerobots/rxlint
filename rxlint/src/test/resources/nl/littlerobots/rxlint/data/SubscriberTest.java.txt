@@ -1,0 +1,43 @@
+package nl.littlerobots.rxtrace;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.functions.Action1;
+
+public class SubscriberTest {
+    public void subscribeWithError() {
+        Subscription s = Observable.<String>just(null).subscribe(new Action1<String>() {
+            @Override
+            public void call(String s) {
+
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+
+            }
+        });
+    }
+
+    public void subscribeWithoutError() {
+        Subscription s = Observable.<String>just(null).subscribe(new Action1<String>() {
+            @Override
+            public void call(String s) {
+
+            }
+        });
+    }
+
+    public void testCallingRandomSubcribe() {
+        subscribe(new Action1<String>() {
+            @Override
+            public void call(String s) {
+
+            }
+        });
+    }
+
+    private void subscribe(Action1<String> test) {
+
+    }
+}
