@@ -37,10 +37,13 @@ public class SubscribeDetectorTest extends LintDetectorTest {
 
     public void testSubscribeCheck() throws Exception {
         String result = lintProject("SubscriberTest.java.txt=>src/test/nl/littlerobots/rxtrace/SubscriberTest.java", "rxjava-1.1.2.jar=>libs/rxjava.jar");
-        assertEquals("src/test/nl/littlerobots/rxtrace/SubscriberTest.java:23: Error: Subscriber is missing onError [RxSubscribeOnError]\n"
-                + "        Subscription s = Observable.<String>just(null).subscribe(new Action1<String>() {\n"
-                + "                         ^\n"
-                + "1 errors, 0 warnings\n", result);
+        assertEquals("src/test/nl/littlerobots/rxtrace/SubscriberTest.java:42: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Subscription s = Observable.<String>just(null).subscribe(new Action1<String>() {\n" +
+                "                         ^\n" +
+                "src/test/nl/littlerobots/rxtrace/SubscriberTest.java:116: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Subscription s = Single.<String>just(null).subscribe(new Action1<String>() {\n" +
+                "                         ^\n" +
+                "2 errors, 0 warnings\n", result);
     }
 
     @Override

@@ -53,10 +53,14 @@ public class SubscribeDetector extends Detector implements Detector.JavaScanner 
             return;
         }
         JavaParser.ResolvedMethod resolvedMethod = (JavaParser.ResolvedMethod) resolvedNode;
-        if (resolvedMethod.getContainingClass().isSubclassOf("rx.Observable", false) &&
+        if (isRxSubscribeableClass(resolvedMethod.getContainingClass()) &&
                 resolvedMethod.getArgumentCount() == 1 &&
                 resolvedMethod.getArgumentType(0).getSignature().startsWith("rx.functions.Action1")) {
             context.report(ISSUE, node, context.getLocation(node), "Subscriber is missing onError");
         }
+    }
+
+    private boolean isRxSubscribeableClass(JavaParser.ResolvedClass clz) {
+        return clz.isSubclassOf("rx.Observable", false) || clz.isSubclassOf("rx.Single", false) || clz.isSubclassOf("rx.Completable", false);
     }
 }
