@@ -61,6 +61,6 @@ public class SubscribeDetector extends Detector implements Detector.JavaScanner 
     }
 
     private boolean isRxSubscribeableClass(JavaParser.ResolvedClass clz) {
-        return clz.isSubclassOf("rx.Observable", false) || clz.isSubclassOf("rx.Single", false) || clz.isSubclassOf("rx.Completable", false);
+        return clz.isSubclassOf("rx.Observable", false) || clz.isSubclassOf("rx.Single", false);
     }
 }
