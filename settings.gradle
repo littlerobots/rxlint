@@ -1,1 +1,1 @@
-include ':detector', ':rxlint'
+include ':detector', ':rxlint', ':testproject', ':testjavalib'

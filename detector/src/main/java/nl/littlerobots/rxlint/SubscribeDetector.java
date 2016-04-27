@@ -55,7 +55,7 @@ public class SubscribeDetector extends Detector implements Detector.JavaScanner 
         JavaParser.ResolvedMethod resolvedMethod = (JavaParser.ResolvedMethod) resolvedNode;
         if (isRxSubscribeableClass(resolvedMethod.getContainingClass()) &&
                 resolvedMethod.getArgumentCount() == 1 &&
-                resolvedMethod.getArgumentType(0).getSignature().startsWith("rx.functions.Action1")) {
+                resolvedMethod.getArgumentType(0).getSignature().startsWith("rx.functions.Action1<")) {
             context.report(ISSUE, node, context.getLocation(node), "Subscriber is missing onError");
         }
     }
