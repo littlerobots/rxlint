@@ -16,29 +16,33 @@
 
 package nl.littlerobots.rxlint;
 
-import com.android.tools.lint.client.api.JavaParser;
 import com.android.tools.lint.detector.api.Category;
+import com.android.tools.lint.detector.api.ClassContext;
 import com.android.tools.lint.detector.api.Detector;
 import com.android.tools.lint.detector.api.Implementation;
 import com.android.tools.lint.detector.api.Issue;
 import com.android.tools.lint.detector.api.JavaContext;
 import com.android.tools.lint.detector.api.Scope;
 import com.android.tools.lint.detector.api.Severity;
+import com.intellij.psi.JavaElementVisitor;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiMethodCallExpression;
+
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.util.Collections;
 import java.util.List;
 
-import lombok.ast.AstVisitor;
-import lombok.ast.MethodInvocation;
-
-public class SubscribeDetector extends Detector implements Detector.JavaScanner {
+public class SubscribeDetector extends Detector implements Detector.JavaPsiScanner {
 
     static final Issue ISSUE = Issue
             .create("RxSubscribeOnError", "Subscriber is missing onError handling",
-                    "Every Observable stream can report errors that should be handled using onError. Not implementing onError will throw an OnErrorNotImplementedException at runtime which can be hard to debug when the error is thrown on a Scheduler that is not the invoking thread.",
+                    "Every Observable stream can report errors that should be handled using onError. Not implementing onError will throw an exception at runtime which can be hard to debug when the error is thrown on a Scheduler that is not the invoking thread.",
                     Category.CORRECTNESS, 8, Severity.ERROR,
                     new Implementation(SubscribeDetector.class, Scope.JAVA_FILE_SCOPE));
-
+    private static final SubscriberCheck[] CHECKS = new SubscriberCheck[]{new RxJavaSubscriberCheck(), new Rxjava2SubscriberCheck()};
 
     @Override
     public List<String> getApplicableMethodNames() {
@@ -46,21 +50,22 @@ public class SubscribeDetector extends Detector implements Detector.JavaScanner 
     }
 
     @Override
-    public void visitMethod(JavaContext context, AstVisitor visitor, MethodInvocation node) {
-        super.visitMethod(context, visitor, node);
-        Object resolvedNode = context.resolve(node);
-        if (!(resolvedNode instanceof JavaParser.ResolvedMethod)) {
-            return;
-        }
-        JavaParser.ResolvedMethod resolvedMethod = (JavaParser.ResolvedMethod) resolvedNode;
-        if (isRxSubscribeableClass(resolvedMethod.getContainingClass()) &&
-                resolvedMethod.getArgumentCount() == 1 &&
-                resolvedMethod.getArgumentType(0).getSignature().startsWith("rx.functions.Action1<")) {
-            context.report(ISSUE, node, context.getLocation(node), "Subscriber is missing onError");
+    public void checkCall(ClassContext context, ClassNode classNode, MethodNode method, MethodInsnNode call) {
+        super.checkCall(context, classNode, method, call);
+    }
+
+    @Override
+    public void visitMethod(JavaContext context, JavaElementVisitor visitor, PsiMethodCallExpression call, PsiMethod method) {
+        super.visitMethod(context, visitor, call, method);
+        for (SubscriberCheck check : CHECKS) {
+            if (check.isMissingOnError(method)) {
+                context.report(ISSUE, call, context.getLocation(call), "Subscriber is missing onError");
+                return;
+            }
         }
     }
 
-    private boolean isRxSubscribeableClass(JavaParser.ResolvedClass clz) {
-        return clz.isSubclassOf("rx.Observable", false) || clz.isSubclassOf("rx.Single", false);
+    interface SubscriberCheck {
+        boolean isMissingOnError(PsiMethod method);
     }
 }

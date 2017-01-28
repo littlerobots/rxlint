@@ -1,12 +1,17 @@
 apply plugin: 'com.android.library'
 
+repositories {
+    jcenter()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
     }
@@ -23,5 +28,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile project(":testjavalib")
     compile 'io.reactivex:rxjava:1.1.1'
-    compile 'nl.littlerobots.rxlint:rxlint:1.0'
+    compile 'io.reactivex.rxjava2:rxjava:2.0.5'
+    compile 'nl.littlerobots.rxlint:rxlint:1.1-SNAPSHOT'
 }

@@ -4,12 +4,12 @@ apply from: rootProject.file('gradle/maven-publish.gradle')
 sourceCompatibility = 1.6
 
 dependencies {
-    compile 'com.android.tools.lint:lint-api:25.1.0'
-    compile 'com.android.tools.lint:lint-checks:25.1.0'
+    compile 'com.android.tools.lint:lint-api:25.2.0'
+    compile 'com.android.tools.lint:lint-checks:25.2.0'
     testCompile 'junit:junit:4.11'
-    testCompile 'com.android.tools.lint:lint:25.1.0'
-    testCompile 'com.android.tools.lint:lint-tests:25.1.0'
-    testCompile 'com.android.tools:testutils:25.1.0'
+    testCompile 'com.android.tools.lint:lint:25.2.0'
+    testCompile 'com.android.tools.lint:lint-tests:25.2.0'
+    testCompile 'com.android.tools:testutils:25.2.0'
     testCompile 'io.reactivex:rxjava:1.1.1'
 }
 
