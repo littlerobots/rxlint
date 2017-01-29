@@ -14,7 +14,7 @@ TL;DR you should handle `onError`.
 Adding `rxlint` to your project is easy, just add the following dependency to your `build.gradle`:
 
 ```
-compile 'nl.littlerobots.rxlint:rxlint:1.0'
+compile 'nl.littlerobots.rxlint:rxlint:1.1'
 ```
 
 Once added to your project an error will be shown like this:
