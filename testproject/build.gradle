@@ -29,5 +29,5 @@ dependencies {
     compile project(":testjavalib")
     compile 'io.reactivex:rxjava:1.1.1'
     compile 'io.reactivex.rxjava2:rxjava:2.0.5'
-    compile 'nl.littlerobots.rxlint:rxlint:1.1-SNAPSHOT'
+    compile 'nl.littlerobots.rxlint:rxlint:1.1'
 }
