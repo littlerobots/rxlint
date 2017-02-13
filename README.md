@@ -1,13 +1,20 @@
 # README
 
-`rxlint` is (currently) a single lint check that checks if a [rxjava][1] subscriber is handling the `onError()`
- callback. 
+`rxlint` is a set of lint checks that check your [RxJava][1] code. There are currently two checks.
 
-By default, [rxjava][1] will throw an `OnErrorNotImplemented` exception wrapped in an `IllegalStateException` for every error that is not handled for RxJava 1.x or will call the default uncaught exception handler directly if you are using RxJava 2.x
+### RxSubscribeOnError
+
+Checks if a [RxJava][1] subscriber is handling the `onError()` callback. 
+
+By default, [RxJava][1] will throw an `OnErrorNotImplemented` exception wrapped in an `IllegalStateException` for every error that is not handled for RxJava 1.x or will call the default uncaught exception handler directly if you are using RxJava 2.x before version 2.0.6.
 
 When subscribing on a [Scheduler][2], like `Schedulers.io()` the error will be thrown on the scheduler thread and the stack trace will have no reference to the place where you subscribed.
 
 TL;DR you should handle `onError`.
+
+### RxLeakedSubscription
+
+Checks that your code keeps a reference to a `Subscription` (rx 1.x) or `Disposable`. Not keeping a reference means that you can't `unsubscribe()` or `dispose()` at the appropriate times which might lead to memory leaks and crashes.
 
 ## Using
 
