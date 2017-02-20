@@ -16,6 +16,7 @@
 
 package nl.littlerobots.testproject;
 
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import rx.Observable;
@@ -127,6 +128,25 @@ public class DanglingSubscriptionTest {
         return Observable.just("Test").subscribe();
     }
 
+    public void subscriptionWithObservable() {
+        Observable.just("test").subscribe(new rx.Observer<String>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(String s) {
+
+            }
+        });
+    }
+
     public void rx2subscriptionWithoutSavingReturn() {
         io.reactivex.Observable.just("Test").subscribe();
     }
@@ -173,4 +193,27 @@ public class DanglingSubscriptionTest {
         });
     }
 
+    public void rx2WithObservable() {
+        io.reactivex.Observable.just("test").subscribe(new Observer<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(String s) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
 }

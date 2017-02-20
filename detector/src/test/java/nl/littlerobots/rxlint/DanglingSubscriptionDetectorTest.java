@@ -41,16 +41,19 @@ public class DanglingSubscriptionDetectorTest extends LintDetectorTest {
                 "rxjava-2.0.5.jar=>libs/rxjava2.jar",
                 "reactive-streams-1.0.0.final.jar=>libs/reactive-streams-1.0.0.final.jar");
 
-        assertEquals("src/test/nl/littlerobots/testproject/DanglingSubscriptionTest.java:31: Error: No reference to the subscription is kept [RxLeakedSubscription]\n" +
+        assertEquals("src/test/nl/littlerobots/testproject/DanglingSubscriptionTest.java:32: Error: No reference to the subscription is kept [RxLeakedSubscription]\n" +
                 "        Observable.just(\"hi\").subscribe(new Subscriber<String>() {\n" +
                 "        ^\n" +
-                "src/test/nl/littlerobots/testproject/DanglingSubscriptionTest.java:131: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
+                "src/test/nl/littlerobots/testproject/DanglingSubscriptionTest.java:132: Error: No reference to the subscription is kept [RxLeakedSubscription]\n" +
+                "        Observable.just(\"test\").subscribe(new rx.Observer<String>() {\n" +
+                "        ^\n" +
+                "src/test/nl/littlerobots/testproject/DanglingSubscriptionTest.java:151: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
                 "        io.reactivex.Observable.just(\"Test\").subscribe();\n" +
                 "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
-                "src/test/nl/littlerobots/testproject/DanglingSubscriptionTest.java:139: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
+                "src/test/nl/littlerobots/testproject/DanglingSubscriptionTest.java:159: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
                 "        io.reactivex.Observable.just(\"Test\").subscribeWith(new DisposableObserver<String>() {\n" +
                 "        ^\n" +
-                "3 errors, 0 warnings\n", result);
+                "4 errors, 0 warnings\n", result);
     }
 
     @Override

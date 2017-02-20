@@ -30,6 +30,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiExpressionStatement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiMethodCallExpression;
+import com.intellij.psi.PsiType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,7 +54,7 @@ public class DanglingSubscriptionDetector extends Detector implements Detector.J
     @Override
     public void visitMethod(JavaContext context, JavaElementVisitor visitor, PsiMethodCallExpression call, PsiMethod method) {
         super.visitMethod(context, visitor, call, method);
-        if (isRxSubscribeableClass(method.getContainingClass())) {
+        if (isRxSubscribeableClass(method.getContainingClass()) && method.getReturnType() != PsiType.VOID) {
             PsiElement element = LintUtils.skipParentheses(call.getParent());
             if (element instanceof PsiExpressionStatement) {
                 String message;
