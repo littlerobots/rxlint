@@ -18,6 +18,7 @@ package nl.littlerobots.testproject;
 
 import java.util.concurrent.Callable;
 
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -390,6 +391,30 @@ public class SubscriberTest {
         io.reactivex.Maybe.just("test").subscribe(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
+
+            }
+        });
+    }
+
+    public void rx2WithObserver() {
+        io.reactivex.Observable.just("test").subscribe(new io.reactivex.Observer<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(String s) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
 
             }
         });

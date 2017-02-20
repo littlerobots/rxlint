@@ -2,6 +2,7 @@ package nl.littlerobots.rxlint;
 
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiType;
 
 public class Rxjava2SubscriberCheck implements SubscribeDetector.SubscriberCheck {
     @Override
@@ -13,7 +14,7 @@ public class Rxjava2SubscriberCheck implements SubscribeDetector.SubscriberCheck
                 "io.reactivex.Completable".equals(type) ||
                 "io.reactivex.Single".equals(type) ||
                 "io.reactivex.Maybe".equals(type)) {
-            return method.getParameterList().getParametersCount() == 1;
+            return method.getReturnType() != PsiType.VOID && method.getParameterList().getParametersCount() == 1;
         }
         return false;
     }

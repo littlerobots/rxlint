@@ -41,22 +41,22 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                 "testjavalib.jar=>libs/testlib.jar",
                 "rxjava-2.0.5.jar=>libs/rxjava2.jar",
                 "reactive-streams-1.0.0.final.jar=>libs/reactive-streams-1.0.0.final.jar");
-        assertEquals("src/test/nl/littlerobots/testproject/SubscriberTest.java:54: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+        assertEquals("src/test/nl/littlerobots/testproject/SubscriberTest.java:55: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        Subscription s = Observable.<String>just(null).subscribe(new Action1<String>() {\n" +
                 "                         ^\n" +
-                "src/test/nl/littlerobots/testproject/SubscriberTest.java:128: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "src/test/nl/littlerobots/testproject/SubscriberTest.java:129: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        Subscription s = Single.<String>just(null).subscribe(new Action1<String>() {\n" +
                 "                         ^\n" +
-                "src/test/nl/littlerobots/testproject/SubscriberTest.java:160: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "src/test/nl/littlerobots/testproject/SubscriberTest.java:161: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        Completable.fromCallable(new Callable<Object>() {\n" +
                 "        ^\n" +
-                "src/test/nl/littlerobots/testproject/SubscriberTest.java:233: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "src/test/nl/littlerobots/testproject/SubscriberTest.java:234: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        io.reactivex.Observable.just(\"test\").subscribe(new Consumer<String>() {\n" +
                 "        ^\n" +
-                "src/test/nl/littlerobots/testproject/SubscriberTest.java:275: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "src/test/nl/littlerobots/testproject/SubscriberTest.java:276: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        io.reactivex.Flowable.just(\"Test\").subscribe(new Consumer<String>() {\n" +
                 "        ^\n" +
-                "src/test/nl/littlerobots/testproject/SubscriberTest.java:312: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "src/test/nl/littlerobots/testproject/SubscriberTest.java:313: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        io.reactivex.Completable.complete().subscribe(new Action() {\n" +
                 "        ^\n" +
                 "src/test/nl/littlerobots/testproject/SubscriberTest.java:349: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
