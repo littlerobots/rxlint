@@ -24,18 +24,18 @@ import com.android.tools.lint.detector.api.JavaContext;
 import com.android.tools.lint.detector.api.LintUtils;
 import com.android.tools.lint.detector.api.Scope;
 import com.android.tools.lint.detector.api.Severity;
-import com.intellij.psi.JavaElementVisitor;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiExpressionStatement;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.psi.PsiType;
+
+import org.jetbrains.uast.UBlockExpression;
+import org.jetbrains.uast.UCallExpression;
+import org.jetbrains.uast.UElement;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class DanglingSubscriptionDetector extends Detector implements Detector.JavaPsiScanner {
+public class DanglingSubscriptionDetector extends Detector implements Detector.UastScanner {
 
     static final Issue ISSUE = Issue
             .create("RxLeakedSubscription", "Subscription is leaked",
@@ -51,19 +51,20 @@ public class DanglingSubscriptionDetector extends Detector implements Detector.J
         return Arrays.asList("subscribe", "subscribeWith");
     }
 
+
     @Override
-    public void visitMethod(JavaContext context, JavaElementVisitor visitor, PsiMethodCallExpression call, PsiMethod method) {
-        super.visitMethod(context, visitor, call, method);
+    public void visitMethod(JavaContext context, UCallExpression node, PsiMethod method) {
+        super.visitMethod(context, node, method);
         if (isRxSubscribeableClass(method.getContainingClass()) && !PsiType.VOID.equals(method.getReturnType())) {
-            PsiElement element = LintUtils.skipParentheses(call.getParent());
-            if (element instanceof PsiExpressionStatement) {
+            UElement element = LintUtils.skipParentheses(node.getUastParent()).getUastParent();
+            if (element instanceof UBlockExpression) {
                 String message;
                 if (isRx2(method.getContainingClass())) {
                     message = "No reference to the disposable is kept";
                 } else {
                     message = "No reference to the subscription is kept";
                 }
-                context.report(ISSUE, call, context.getLocation(call), message);
+                context.report(ISSUE, node, context.getLocation(node), message);
             }
         }
     }

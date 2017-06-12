@@ -23,14 +23,14 @@ import com.android.tools.lint.detector.api.Issue;
 import com.android.tools.lint.detector.api.JavaContext;
 import com.android.tools.lint.detector.api.Scope;
 import com.android.tools.lint.detector.api.Severity;
-import com.intellij.psi.JavaElementVisitor;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiMethodCallExpression;
+
+import org.jetbrains.uast.UCallExpression;
 
 import java.util.Collections;
 import java.util.List;
 
-public class SubscribeDetector extends Detector implements Detector.JavaPsiScanner {
+public class SubscribeDetector extends Detector implements Detector.UastScanner {
 
     static final Issue ISSUE = Issue
             .create("RxSubscribeOnError", "Subscriber is missing onError handling",
@@ -44,12 +44,12 @@ public class SubscribeDetector extends Detector implements Detector.JavaPsiScann
         return Collections.singletonList("subscribe");
     }
 
+
     @Override
-    public void visitMethod(JavaContext context, JavaElementVisitor visitor, PsiMethodCallExpression call, PsiMethod method) {
-        super.visitMethod(context, visitor, call, method);
+    public void visitMethod(JavaContext context, UCallExpression node, PsiMethod method) {
         for (SubscriberCheck check : CHECKS) {
             if (check.isMissingOnError(method)) {
-                context.report(ISSUE, call, context.getLocation(call), "Subscriber is missing onError");
+                context.report(ISSUE, node, context.getLocation(node), "Subscriber is missing onError");
                 return;
             }
         }
