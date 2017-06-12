@@ -14,7 +14,7 @@ public class Rxjava2SubscriberCheck implements SubscribeDetector.SubscriberCheck
                 "io.reactivex.Completable".equals(type) ||
                 "io.reactivex.Single".equals(type) ||
                 "io.reactivex.Maybe".equals(type)) {
-            return method.getReturnType() != PsiType.VOID && method.getParameterList().getParametersCount() == 1;
+            return !PsiType.VOID.equals(method.getReturnType()) && method.getParameterList().getParametersCount() == 1;
         }
         return false;
     }
