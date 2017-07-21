@@ -20,6 +20,7 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
+import io.reactivex.functions.BiConsumer;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableMaybeObserver;
@@ -415,6 +416,66 @@ public class SubscriberTest {
 
             @Override
             public void onComplete() {
+
+            }
+        });
+    }
+
+    public void rx2WithSingleObserver() {
+        io.reactivex.Single.just(1).subscribe(new io.reactivex.SingleObserver<Integer>() {
+            @Override public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override public void onSuccess(Integer integer) {
+
+            }
+
+            @Override public void onError(Throwable e) {
+
+            }
+        });
+    }
+
+    public void rx2WithMaybeObserver() {
+        io.reactivex.Maybe.just(1).subscribe(new io.reactivex.MaybeObserver<Integer>() {
+            @Override public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override public void onSuccess(Integer integer) {
+
+            }
+
+            @Override public void onError(Throwable e) {
+
+            }
+
+            @Override public void onComplete() {
+
+            }
+        });
+    }
+
+    public void rx2WithCompletableObserver() {
+        io.reactivex.Completable.complete().subscribe(new io.reactivex.CompletableObserver() {
+            @Override public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override public void onComplete() {
+
+            }
+
+            @Override public void onError(Throwable e) {
+
+            }
+        });
+    }
+
+    public void rx2WithSingleBiConsumer() {
+        io.reactivex.Single.just(1).subscribe(new BiConsumer<Integer, Throwable>() {
+            @Override public void accept(Integer integer, Throwable throwable) throws Exception {
 
             }
         });
