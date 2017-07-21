@@ -37,7 +37,7 @@ public class SubscribeDetector extends Detector implements Detector.JavaPsiScann
                     "Every Observable stream can report errors that should be handled using onError. Not implementing onError will throw an exception at runtime which can be hard to debug when the error is thrown on a Scheduler that is not the invoking thread.",
                     Category.CORRECTNESS, 8, Severity.ERROR,
                     new Implementation(SubscribeDetector.class, Scope.JAVA_FILE_SCOPE));
-    private static final SubscriberCheck[] CHECKS = new SubscriberCheck[]{new RxJavaSubscriberCheck(), new Rxjava2SubscriberCheck()};
+    private static final SubscriberCheck[] CHECKS = new SubscriberCheck[]{new RxJavaSubscriberCheck(), new RxJava2SubscriberCheck()};
 
     @Override
     public List<String> getApplicableMethodNames() {
