@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 1.3
+-----------
+* Bug fixes
+
+Version 1.2
+-----------
+* Add check for leaking subscriptions
+
 Version 1.1
 -------------
 * Support for all Observable types: Observable, Single and Completable (rxjava 1.x)
