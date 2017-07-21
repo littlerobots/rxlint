@@ -54,7 +54,7 @@ public class DanglingSubscriptionDetector extends Detector implements Detector.J
     @Override
     public void visitMethod(JavaContext context, JavaElementVisitor visitor, PsiMethodCallExpression call, PsiMethod method) {
         super.visitMethod(context, visitor, call, method);
-        if (isRxSubscribeableClass(method.getContainingClass()) && method.getReturnType() != PsiType.VOID) {
+        if (isRxSubscribeableClass(method.getContainingClass()) && !PsiType.VOID.equals(method.getReturnType())) {
             PsiElement element = LintUtils.skipParentheses(call.getParent());
             if (element instanceof PsiExpressionStatement) {
                 String message;
