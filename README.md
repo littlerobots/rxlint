@@ -21,7 +21,7 @@ Checks that your code keeps a reference to a `Subscription` (rx 1.x) or `Disposa
 Adding `rxlint` to your project is easy, just add the following dependency to your `build.gradle`:
 
 ```
-compile 'nl.littlerobots.rxlint:rxlint:1.2'
+compile 'nl.littlerobots.rxlint:rxlint:<latest version>'
 ```
 
 Once added to your project an error will be shown like this:
