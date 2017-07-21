@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 1.4
+-----------
+* Fix for false positive when using `BiConsumer` as a subscriber
+* Fixed internal usage of PSI classes
+
 Version 1.3
 -----------
 * Bug fixes
