@@ -47,6 +47,7 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                         "\n" +
                         "import io.reactivex.disposables.Disposable;\n" +
                         "import io.reactivex.functions.Action;\n" +
+                        "import io.reactivex.functions.BiConsumer;\n" +
                         "import io.reactivex.functions.Consumer;\n" +
                         "import io.reactivex.observers.DisposableCompletableObserver;\n" +
                         "import io.reactivex.observers.DisposableMaybeObserver;\n" +
@@ -446,30 +447,90 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                         "            }\n" +
                         "        });\n" +
                         "    }\n" +
+                        "\n" +
+                        "    public void rx2WithSingleObserver() {\n" +
+                        "        io.reactivex.Single.just(1).subscribe(new io.reactivex.SingleObserver<Integer>() {\n" +
+                        "            @Override public void onSubscribe(Disposable d) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override public void onSuccess(Integer integer) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override public void onError(Throwable e) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "        });\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    public void rx2WithMaybeObserver() {\n" +
+                        "        io.reactivex.Maybe.just(1).subscribe(new io.reactivex.MaybeObserver<Integer>() {\n" +
+                        "            @Override public void onSubscribe(Disposable d) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override public void onSuccess(Integer integer) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override public void onError(Throwable e) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override public void onComplete() {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "        });\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    public void rx2WithCompletableObserver() {\n" +
+                        "        io.reactivex.Completable.complete().subscribe(new io.reactivex.CompletableObserver() {\n" +
+                        "            @Override public void onSubscribe(Disposable d) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override public void onComplete() {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override public void onError(Throwable e) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "        });\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    public void rx2WithSingleBiConsumer() {\n" +
+                        "        io.reactivex.Single.just(1).subscribe(new BiConsumer<Integer, Throwable>() {\n" +
+                        "            @Override public void accept(Integer integer, Throwable throwable) throws Exception {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "        });\n" +
+                        "    }\n" +
                         "}\n"));
 
-        assertEquals("src/nl/littlerobots/testproject/SubscriberTest.java:39: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+        assertEquals("src/nl/littlerobots/testproject/SubscriberTest.java:40: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        Subscription s = Observable.<String>just(null).subscribe(new Action1<String>() {\n" +
                 "                         ^\n" +
-                "src/nl/littlerobots/testproject/SubscriberTest.java:113: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "src/nl/littlerobots/testproject/SubscriberTest.java:114: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        Subscription s = Single.<String>just(null).subscribe(new Action1<String>() {\n" +
                 "                         ^\n" +
-                "src/nl/littlerobots/testproject/SubscriberTest.java:145: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "src/nl/littlerobots/testproject/SubscriberTest.java:146: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        Completable.fromCallable(new Callable<Object>() {\n" +
                 "        ^\n" +
-                "src/nl/littlerobots/testproject/SubscriberTest.java:218: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "src/nl/littlerobots/testproject/SubscriberTest.java:219: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        io.reactivex.Observable.just(\"test\").subscribe(new Consumer<String>() {\n" +
                 "        ^\n" +
-                "src/nl/littlerobots/testproject/SubscriberTest.java:260: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "src/nl/littlerobots/testproject/SubscriberTest.java:261: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        io.reactivex.Flowable.just(\"Test\").subscribe(new Consumer<String>() {\n" +
                 "        ^\n" +
-                "src/nl/littlerobots/testproject/SubscriberTest.java:297: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "src/nl/littlerobots/testproject/SubscriberTest.java:298: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        io.reactivex.Completable.complete().subscribe(new Action() {\n" +
                 "        ^\n" +
-                "src/nl/littlerobots/testproject/SubscriberTest.java:333: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "src/nl/littlerobots/testproject/SubscriberTest.java:334: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        io.reactivex.Single.just(\"test\").subscribe(new Consumer<String>() {\n" +
                 "        ^\n" +
-                "src/nl/littlerobots/testproject/SubscriberTest.java:375: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "src/nl/littlerobots/testproject/SubscriberTest.java:376: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        io.reactivex.Maybe.just(\"test\").subscribe(new Consumer<String>() {\n" +
                 "        ^\n" +
                 "8 errors, 0 warnings\n", result);
