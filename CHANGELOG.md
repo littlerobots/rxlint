@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 1.5
+-----------
+* Plain `subscribe()` without arguments is now also considered an error
+* UAST support which means the check also works for Kotlin code (AS 3.0 and up)
+
 Version 1.4
 -----------
 * Fix for false positive when using `BiConsumer` as a subscriber

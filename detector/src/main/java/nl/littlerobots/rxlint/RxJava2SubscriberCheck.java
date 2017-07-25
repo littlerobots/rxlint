@@ -16,12 +16,12 @@ public class RxJava2SubscriberCheck implements SubscribeDetector.SubscriberCheck
                 "io.reactivex.Completable".equals(type) ||
                 "io.reactivex.Single".equals(type) ||
                 "io.reactivex.Maybe".equals(type)) {
-            return checkMethodSignature(method);
+            return hasNoErrorHandling(method);
         }
         return false;
     }
 
-    private boolean checkMethodSignature(PsiMethod method) {
+    private boolean hasNoErrorHandling(PsiMethod method) {
         // subscribe() calls that have no return type are custom Observers whose error handling we cannot check
         if (PsiType.VOID.equals(method.getReturnType())) {
             return false;
