@@ -28,7 +28,7 @@ Once added to your project an error will be shown like this:
 
 ![Lint screenshot](lint.png)
 
-If you are calling `subscribe()` with a `Subscriber` (rx 1.x) or `DisposableXXXSubscriber` (rx 2.x) the subscriber is not checked for handling errors, and just plain `subscribe()` isn't flagged either. In both cases I assume you know what you are doing :)
+If you are calling `subscribe()` with a `Subscriber` (rx 1.x) or `DisposableXXXSubscriber` (rx 2.x) the subscriber is not checked for handling errors, assuming that you'll handle the errors properly.
 
 ### Ignoring errors
 
