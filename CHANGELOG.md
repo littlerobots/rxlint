@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 1.6
+-----------
+* New check to flag operators using their default Scheduler, such as delay()
+
 Version 1.5
 -----------
 * Plain `subscribe()` without arguments is now also considered an error
