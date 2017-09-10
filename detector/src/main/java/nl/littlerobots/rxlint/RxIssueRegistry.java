@@ -25,6 +25,6 @@ public class RxIssueRegistry extends IssueRegistry {
 
     @Override
     public List<Issue> getIssues() {
-        return Arrays.asList(SubscribeDetector.ISSUE, DanglingSubscriptionDetector.ISSUE);
+        return Arrays.asList(SubscribeDetector.ISSUE, DanglingSubscriptionDetector.ISSUE, DefaultSchedulerDetector.ISSUE);
     }
 }
