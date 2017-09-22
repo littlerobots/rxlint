@@ -19,26 +19,6 @@ android {
     }
 }
 
-configurations {
-    lintChecks
-}
-
 dependencies {
     lintChecks project(path: ':detector', configuration: "lintChecks")
-}
-
-task copyLintJar(type: Copy) {
-    from(configurations.lintChecks) {
-        rename {
-            String fileName ->
-                'lint.jar'
-        }
-    }
-    into 'build/intermediates/lint/'
-}
-
-
-project.afterEvaluate {
-    def compileLintTask = project.tasks.find { it.name == 'compileLint' }
-    compileLintTask.dependsOn(copyLintJar)
 }
