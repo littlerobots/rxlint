@@ -1,6 +1,6 @@
 # README
 
-`rxlint` is a set of lint checks that check your [RxJava][1] code. There are currently two checks.
+`rxlint` is a set of lint checks that check your [RxJava][1] code. There are currently three checks.
 
 ### RxSubscribeOnError
 
@@ -16,6 +16,13 @@ TL;DR you should handle `onError`.
 
 Checks that your code keeps a reference to a `Subscription` (rx 1.x) or `Disposable`. Not keeping a reference means that you can't `unsubscribe()` or `dispose()` at the appropriate times which might lead to memory leaks and crashes.
 
+### RxDefaultScheduler
+
+Checks if an RxJava 2.x operator is using a default scheduler. Operators like `delay()` do this. This can cause errors on 
+Android in particular because a sequence like `observable.observeOn(mainThread()).delay(10, TimeUnit.SECONDS)` will emit the value on the 
+default computation scheduler, and not the `mainThread()` scheduler like one might think. If the subscriber is accessing views on any other thread than the main thread, will throw
+an exception at runtime. This check is a warning by default.
+ 
 ## Using
 
 Adding `rxlint` to your project is easy, just add the following dependency to your `build.gradle`:
