@@ -42,37 +42,27 @@ public class DefaultSchedulerDetectorTest extends LintDetectorTest {
                 TestFiles.copy("testjavalib.jar", "libs/testjavalib.jar", this),
                 TestFiles.java("package nl.littlerobots.testproject;\n" +
                         "\n" +
-                        "import java.util.List;\n" +
                         "import java.util.concurrent.TimeUnit;\n" +
                         "\n" +
-                        "import io.reactivex.Observable;\n" +
                         "import io.reactivex.schedulers.Schedulers;\n" +
                         "\n" +
                         "public class DefaultSchedulerTest {\n" +
                         "    public void testDefaultScheduler() {\n" +
                         "        io.reactivex.Observable<String> observable = io.reactivex.Observable.just(\"test\").delay(1, TimeUnit.SECONDS).timeout(1, TimeUnit.SECONDS);\n" +
                         "    }\n" +
-                        "\n" +
-                        "    public void testDefaultWithObserveOn() {\n" +
-                        "        io.reactivex.Observable<String> observable = io.reactivex.Observable.just(\"test\").delay(1, TimeUnit.SECONDS).observeOn(Schedulers.io());\n" +
-                        "        Observable<List<String>> observable2 = Observable.just(\"test\").delay(1, TimeUnit.SECONDS).buffer(1).observeOn(Schedulers.io());\n" +
-                        "    }\n" +
-                        "\n" +
+                        "    \n" +
                         "    public void testNonDefaultScheduler() {\n" +
                         "        io.reactivex.Observable<String> observable = io.reactivex.Observable.just(\"test\").delay(1, TimeUnit.SECONDS, Schedulers.computation());\n" +
                         "    }\n" +
                         "}\n"));
 
-        assertEquals("src/nl/littlerobots/testproject/DefaultSchedulerTest.java:11: Warning: delay() is using its default scheduler [RxDefaultScheduler]\n" +
+        assertEquals("src/nl/littlerobots/testproject/DefaultSchedulerTest.java:9: Warning: delay() is using its default scheduler [RxDefaultScheduler]\n" +
                 "        io.reactivex.Observable<String> observable = io.reactivex.Observable.just(\"test\").delay(1, TimeUnit.SECONDS).timeout(1, TimeUnit.SECONDS);\n" +
                 "                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
-                "src/nl/littlerobots/testproject/DefaultSchedulerTest.java:11: Warning: timeout() is using its default scheduler [RxDefaultScheduler]\n" +
+                "src/nl/littlerobots/testproject/DefaultSchedulerTest.java:9: Warning: timeout() is using its default scheduler [RxDefaultScheduler]\n" +
                 "        io.reactivex.Observable<String> observable = io.reactivex.Observable.just(\"test\").delay(1, TimeUnit.SECONDS).timeout(1, TimeUnit.SECONDS);\n" +
                 "                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
-                "src/nl/littlerobots/testproject/DefaultSchedulerTest.java:16: Warning: delay() is using its default scheduler [RxDefaultScheduler]\n" +
-                "        Observable<List<String>> observable2 = Observable.just(\"test\").delay(1, TimeUnit.SECONDS).buffer(1).observeOn(Schedulers.io());\n" +
-                "                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
-                "0 errors, 3 warnings\n", result);
+                "0 errors, 2 warnings\n", result);
     }
 
     @Override

@@ -40,20 +40,10 @@ public class DefaultSchedulerDetector extends Detector implements Detector.UastS
             @Override
             public void visitMethod(UMethod uMethod) {
                 uMethod.accept(new AbstractUastVisitor() {
-                    private UCallExpression flaggedNode;
 
                     @Override
                     public boolean visitCallExpression(UCallExpression node) {
                         UIdentifier identifier = node.getMethodIdentifier();
-
-                        if (identifier != null && flaggedNode != null) {
-                            if ("observeOn".equals(identifier.getName())) {
-                                flaggedNode = null;
-                            } else {
-                                context.report(ISSUE, context.getLocation(flaggedNode), String.format("%s() is using its default scheduler", flaggedNode.getMethodIdentifier().getName()));
-                                flaggedNode = null;
-                            }
-                        }
 
                         if (identifier != null && identifier.getUastParent() != null) {
                             PsiMethod method = (PsiMethod) UastUtils.tryResolve(identifier.getUastParent());
@@ -61,19 +51,11 @@ public class DefaultSchedulerDetector extends Detector implements Detector.UastS
                             if (annotation != null) {
                                 String value = AnnotationUtil.getStringAttributeValue(annotation, null);
                                 if (!("none".equals(value) || "custom".equals(value))) {
-                                    flaggedNode = node;
-                                    //context.report(ISSUE, context.getLocation(node), String.format("%s() is using its default scheduler", identifier.getName()));
+                                    context.report(ISSUE, context.getLocation(node), String.format("%s() is using its default scheduler", identifier.getName()));
                                 }
                             }
                         }
                         return false;
-                    }
-
-                    @Override
-                    public void afterVisitMethod(UMethod node) {
-                        if (flaggedNode != null) {
-                            context.report(ISSUE, context.getLocation(flaggedNode), String.format("%s() is using its default scheduler", flaggedNode.getMethodIdentifier().getName()));
-                        }
                     }
                 });
             }
