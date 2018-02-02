@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 1.6.1
+-----------
+* Updated 3.1 beta lint api
+
 Version 1.6
 -----------
 * New check to flag operators using their default Scheduler, such as delay()
