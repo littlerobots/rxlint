@@ -4,12 +4,12 @@ apply from: rootProject.file('gradle/maven-publish.gradle')
 sourceCompatibility = 1.6
 
 dependencies {
-    compileOnly 'com.android.tools.lint:lint-api:26.0.0-beta6'
-    compileOnly 'com.android.tools.lint:lint-checks:26.0.0-beta6'
+    compileOnly "com.android.tools.lint:lint-api:$lintApiVersion"
+    compileOnly "com.android.tools.lint:lint-checks:$lintApiVersion"
     testImplementation 'junit:junit:4.12'
-    testImplementation 'com.android.tools.lint:lint:26.0.0-beta6'
-    testImplementation 'com.android.tools.lint:lint-tests:26.0.0-beta6'
-    testImplementation 'com.android.tools:testutils:26.0.0-beta6'
+    testImplementation "com.android.tools.lint:lint:$lintApiVersion"
+    testImplementation "com.android.tools.lint:lint-tests:$lintApiVersion"
+    testImplementation "com.android.tools:testutils:$lintApiVersion"
 }
 
 sourceSets {

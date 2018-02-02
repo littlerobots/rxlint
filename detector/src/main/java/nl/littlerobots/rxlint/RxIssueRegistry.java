@@ -16,12 +16,18 @@
 package nl.littlerobots.rxlint;
 
 import com.android.tools.lint.client.api.IssueRegistry;
+import com.android.tools.lint.detector.api.ApiKt;
 import com.android.tools.lint.detector.api.Issue;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class RxIssueRegistry extends IssueRegistry {
+
+    @Override
+    public int getApi() {
+        return ApiKt.CURRENT_API;
+    }
 
     @Override
     public List<Issue> getIssues() {
