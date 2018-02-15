@@ -8,6 +8,7 @@ Version 1.6.1
 Version 1.6
 -----------
 * New check to flag operators using their default Scheduler, such as delay()
+* RxLint now requires Android Gradle Plugin (AGP) 3.0 or up
 
 Version 1.5
 -----------
