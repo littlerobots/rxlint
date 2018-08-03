@@ -4,9 +4,11 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.util.TypeConversionUtil;
 
+import org.jetbrains.uast.UCallExpression;
+
 public class RxJavaSubscriberCheck implements SubscribeDetector.SubscriberCheck {
     @Override
-    public boolean isMissingOnError(PsiMethod method) {
+    public boolean isMissingOnError(UCallExpression node, PsiMethod method) {
         PsiClass clz = method.getContainingClass();
         if ("rx.Observable".equals(clz.getQualifiedName()) || "rx.Single".equals(clz.getQualifiedName())) {
             return method.getParameterList().getParametersCount() == 0 ||

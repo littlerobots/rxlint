@@ -655,6 +655,71 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                 "10 errors, 0 warnings\n", result);
     }
 
+    public void testOnErrorComplete() throws Exception {
+        String result = lintProject(TestFiles.copy("rxjava-2.0.5.jar", "libs/rxjava2.jar", this),
+                TestFiles.copy("reactive-streams-1.0.0.final.jar", "libs/reactive-streams-1.0.0.final.jar", this),
+                TestFiles.copy("testjavalib.jar", "libs/testjavalib.jar", this),
+                TestFiles.java("package nl.littlerobots.testproject;\n" +
+                        "\n" +
+                        "import io.reactivex.Completable;\n" +
+                        "import io.reactivex.Flowable;\n" +
+                        "import io.reactivex.Maybe;\n" +
+                        "import io.reactivex.Observable;\n" +
+                        "\n" +
+                        "public class ErrorHandlingOperatorsTest {\n" +
+                        "\n" +
+                        "    public void surpressesErrors() {\n" +
+                        "        Completable.fromAction(() -> {\n" +
+                        "\n" +
+                        "        }).onErrorComplete().subscribe();\n" +
+                        "\n" +
+                        "        Observable.just(\"test\").onErrorReturnItem(\"ha ha\").subscribe();\n" +
+                        "        Flowable.just(\"test\").onErrorReturnItem(\"test\").subscribe();\n" +
+                        "        Maybe.just(\"test\").onErrorComplete().subscribe();\n" +
+                        "        Maybe.just(\"test\").onErrorReturnItem(\"test\").subscribe();\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    public void doesNotSupressErrors() {\n" +
+                        "        Completable.fromAction(() -> {\n" +
+                        "\n" +
+                        "        }).onErrorComplete().cache().subscribe();\n" +
+                        "\n" +
+                        "        Completable.fromAction(() -> {\n" +
+                        "\n" +
+                        "        }).onErrorComplete(t -> false).subscribe();\n" +
+                        "\n" +
+                        "\n" +
+                        "        Observable.just(\"test\").onErrorReturnItem(\"ha ha\").map(v -> v).subscribe();\n" +
+                        "        Flowable.just(\"test\").onErrorReturnItem(\"test\").map(v -> v).subscribe();\n" +
+                        "        Maybe.just(\"test\").onErrorComplete(t -> false).subscribe();\n" +
+                        "        Maybe.just(\"test\").onErrorComplete().map(v -> v).subscribe();\n" +
+                        "        Maybe.just(\"test\").onErrorReturnItem(\"test\").map(v -> v).subscribe();\n" +
+                        "    }\n" +
+                        "}\n"));
+        assertEquals("src/nl/littlerobots/testproject/ErrorHandlingOperatorsTest.java:22: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Completable.fromAction(() -> {\n" +
+                "        ^\n" +
+                "src/nl/littlerobots/testproject/ErrorHandlingOperatorsTest.java:26: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Completable.fromAction(() -> {\n" +
+                "        ^\n" +
+                "src/nl/littlerobots/testproject/ErrorHandlingOperatorsTest.java:31: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Observable.just(\"test\").onErrorReturnItem(\"ha ha\").map(v -> v).subscribe();\n" +
+                "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "src/nl/littlerobots/testproject/ErrorHandlingOperatorsTest.java:32: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Flowable.just(\"test\").onErrorReturnItem(\"test\").map(v -> v).subscribe();\n" +
+                "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "src/nl/littlerobots/testproject/ErrorHandlingOperatorsTest.java:33: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Maybe.just(\"test\").onErrorComplete(t -> false).subscribe();\n" +
+                "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "src/nl/littlerobots/testproject/ErrorHandlingOperatorsTest.java:34: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Maybe.just(\"test\").onErrorComplete().map(v -> v).subscribe();\n" +
+                "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "src/nl/littlerobots/testproject/ErrorHandlingOperatorsTest.java:35: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Maybe.just(\"test\").onErrorReturnItem(\"test\").map(v -> v).subscribe();\n" +
+                "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "7 errors, 0 warnings\n", result);
+    }
+
     @Override
     protected boolean allowCompilationErrors() {
         return false;

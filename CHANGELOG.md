@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 1.7.0-SNAPSHOT
+----------------------
+* When the `onErrorComplete()` or `onErrorReturnItem()` operator is used as a last operator before `subscribe()` no missing error handler will be flagged.
+This only works for RxJava 2.x (see below)
+* In this version support voor RxJava version 1.x is depreciated. Existing checks will keep working, but no new checks will be added.
+
 Version 1.6.1
 -----------
 * Updated 3.1 beta lint api

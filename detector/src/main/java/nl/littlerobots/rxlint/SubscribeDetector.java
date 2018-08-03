@@ -48,7 +48,7 @@ public class SubscribeDetector extends Detector implements Detector.UastScanner 
     @Override
     public void visitMethod(JavaContext context, UCallExpression node, PsiMethod method) {
         for (SubscriberCheck check : CHECKS) {
-            if (check.isMissingOnError(method)) {
+            if (check.isMissingOnError(node, method)) {
                 context.report(ISSUE, node, context.getLocation(node), "Subscriber is missing onError");
                 return;
             }
@@ -56,6 +56,6 @@ public class SubscribeDetector extends Detector implements Detector.UastScanner 
     }
 
     interface SubscriberCheck {
-        boolean isMissingOnError(PsiMethod method);
+        boolean isMissingOnError(UCallExpression node, PsiMethod method);
     }
 }

@@ -33,5 +33,5 @@ dependencies {
     implementation project(":testjavalib")
     implementation 'io.reactivex:rxjava:1.3.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.1'
-    implementation 'nl.littlerobots.rxlint:rxlint:1.6'
+    implementation 'nl.littlerobots.rxlint:rxlint:1.6.1'
 }
