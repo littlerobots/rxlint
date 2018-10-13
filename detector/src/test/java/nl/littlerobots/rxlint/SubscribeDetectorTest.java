@@ -720,6 +720,29 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                 "7 errors, 0 warnings\n", result);
     }
 
+    public void testErrorHandlingOperatorKotlin() {
+        lint().files(
+                copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
+                copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
+                copy("autodispose-1.0.0.jar", "libs/autodispose.jar"),
+                kotlin("package nl.littlerobots.test\n" +
+                        "\n" +
+                        "import io.reactivex.Observable\n" +
+                        "\n" +
+                        "class Demo {\n" +
+                        "    fun getItemFromNetwork(): Observable<String> = Observable.just(\"test\")\n" +
+                        "\n" +
+                        "    fun handlingErrors() {\n" +
+                        "        val notHandlingErrors = getItemFromNetwork().subscribe()\n" +
+                        "        val hasDefaultErrorHandling = getItemFromNetwork().onErrorReturnItem(\"test\").subscribe()\n" +
+                        "    }\n" +
+                        "}")
+        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expect("src/nl/littlerobots/test/Demo.kt:9: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        val notHandlingErrors = getItemFromNetwork().subscribe()\n" +
+                "                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "1 errors, 0 warnings");
+    }
+
     public void testAutodispose() throws Exception {
         lint().files(
                 copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),

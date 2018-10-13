@@ -1,6 +1,7 @@
 package nl.littlerobots.rxlint;
 
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiType;
@@ -8,8 +9,7 @@ import com.intellij.psi.util.TypeConversionUtil;
 
 import org.jetbrains.uast.UCallExpression;
 import org.jetbrains.uast.UExpression;
-import org.jetbrains.uast.UQualifiedReferenceExpression;
-import org.jetbrains.uast.USimpleNameReferenceExpression;
+import org.jetbrains.uast.UastUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,17 +41,18 @@ public class RxJava2SubscriberCheck implements SubscribeDetector.SubscriberCheck
             AUTODISPOSE_SINGLE_PROXY_TYPE,
             AUTODISPOSE_MAYBE_PROXY_TYPE);
 
-    private static Map<String, List<String>> ERROR_HANDLING_OPERATORS = new HashMap<String, List<String>>(10);
+    private static Map<String, List<ErrorHandlingOperator>> ERROR_HANDLING_OPERATORS = new HashMap<String, List<ErrorHandlingOperator>>(10);
 
     static {
-        ERROR_HANDLING_OPERATORS.put(OBSERVABLE_TYPE, Collections.singletonList("onErrorReturnItem("));
-        ERROR_HANDLING_OPERATORS.put(FLOWABLE_TYPE, Collections.singletonList("onErrorReturnItem("));
-        ERROR_HANDLING_OPERATORS.put(COMPLETABLE_TYPE, Collections.singletonList("onErrorComplete()"));
-        ERROR_HANDLING_OPERATORS.put(MAYBE_TYPE, Arrays.asList("onErrorComplete()", "onErrorReturnItem("));
-        ERROR_HANDLING_OPERATORS.put(AUTODISPOSE_OBSERVABLE_PROXY_TYPE, Collections.singletonList("onErrorReturnItem("));
-        ERROR_HANDLING_OPERATORS.put(AUTODISPOSE_FLOWABLE_PROXY_TYPE, Collections.singletonList("onErrorReturnItem("));
-        ERROR_HANDLING_OPERATORS.put(AUTODISPOSE_COMPLETABLE_PROXY_TYPE, Collections.singletonList("onErrorComplete()"));
-        ERROR_HANDLING_OPERATORS.put(AUTODISPOSE_MAYBE_PROXY_TYPE, Arrays.asList("onErrorComplete()", "onErrorReturnItem("));
+        ERROR_HANDLING_OPERATORS.put(OBSERVABLE_TYPE, Collections.singletonList(new ErrorHandlingOperator("onErrorReturnItem", true)));
+        ERROR_HANDLING_OPERATORS.put(FLOWABLE_TYPE, Collections.singletonList(new ErrorHandlingOperator("onErrorReturnItem", true)));
+        ERROR_HANDLING_OPERATORS.put(COMPLETABLE_TYPE, Collections.singletonList(new ErrorHandlingOperator("onErrorComplete")));
+        ERROR_HANDLING_OPERATORS.put(MAYBE_TYPE, Arrays.asList(new ErrorHandlingOperator("onErrorComplete"), new ErrorHandlingOperator("onErrorReturnItem", true)));
+
+        ERROR_HANDLING_OPERATORS.put(AUTODISPOSE_OBSERVABLE_PROXY_TYPE, Collections.singletonList(new ErrorHandlingOperator("onErrorReturnItem", true)));
+        ERROR_HANDLING_OPERATORS.put(AUTODISPOSE_FLOWABLE_PROXY_TYPE, Collections.singletonList(new ErrorHandlingOperator("onErrorReturnItem", true)));
+        ERROR_HANDLING_OPERATORS.put(AUTODISPOSE_COMPLETABLE_PROXY_TYPE, Collections.singletonList(new ErrorHandlingOperator("onErrorComplete")));
+        ERROR_HANDLING_OPERATORS.put(AUTODISPOSE_MAYBE_PROXY_TYPE, Arrays.asList(new ErrorHandlingOperator("onErrorComplete"), new ErrorHandlingOperator("onErrorReturnItem", true)));
     }
 
     @Override
@@ -69,18 +70,17 @@ public class RxJava2SubscriberCheck implements SubscribeDetector.SubscriberCheck
     }
 
     private boolean isErrorSuppressingOperator(UExpression receiver, String type) {
-        List<String> methods = ERROR_HANDLING_OPERATORS.get(type);
+        List<ErrorHandlingOperator> methods = ERROR_HANDLING_OPERATORS.get(type);
         if (methods == null || methods.isEmpty()) {
             return false;
         }
         if (receiver == null) {
             return false;
         }
-        if (receiver instanceof UQualifiedReferenceExpression && !(receiver instanceof USimpleNameReferenceExpression)) {
-            //FIXME Change to a proper way to get the method name and params
-            String selector = ((UQualifiedReferenceExpression) receiver).getSelector().toString();
-            for (String method : methods) {
-                if (selector.startsWith(method)) {
+        PsiElement element = UastUtils.tryResolve(receiver);
+        if (element instanceof PsiMethod) {
+            for (ErrorHandlingOperator method : methods) {
+                if (method.matches((PsiMethod) element)) {
                     return true;
                 }
             }
@@ -105,5 +105,23 @@ public class RxJava2SubscriberCheck implements SubscribeDetector.SubscriberCheck
         // if we have only one argument, check that it's not a BiConsumer
         PsiParameter parameter = method.getParameterList().getParameters()[0];
         return !"io.reactivex.functions.BiConsumer".equals(TypeConversionUtil.erasure(parameter.getType()).getCanonicalText());
+    }
+
+    private static class ErrorHandlingOperator {
+        private final String name;
+        private final boolean hasParameter;
+
+        ErrorHandlingOperator(String name, boolean hasParameter) {
+            this.name = name;
+            this.hasParameter = hasParameter;
+        }
+
+        ErrorHandlingOperator(String name) {
+            this(name, false);
+        }
+
+        public boolean matches(PsiMethod method) {
+            return name.equals(method.getName()) && ((hasParameter && method.getParameterList().getParametersCount() == 1) || (!hasParameter && method.getParameterList().isEmpty()));
+        }
     }
 }
