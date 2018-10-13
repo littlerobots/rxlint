@@ -37,8 +37,8 @@ public class DefaultSchedulerDetectorTest extends LintDetectorTest {
     }
 
     public void testDefaultScheduler() throws Exception {
-        String result = lintProject(TestFiles.copy("rxjava-2.0.5.jar", "libs/rxjava2.jar", this),
-                TestFiles.copy("reactive-streams-1.0.0.final.jar", "libs/reactive-streams-1.0.0.final.jar", this),
+        String result = lintProject(TestFiles.copy("rxjava-2.2.2.jar", "libs/rxjava2.jar", this),
+                TestFiles.copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar", this),
                 TestFiles.copy("testjavalib.jar", "libs/testjavalib.jar", this),
                 TestFiles.java("package nl.littlerobots.testproject;\n" +
                         "\n" +

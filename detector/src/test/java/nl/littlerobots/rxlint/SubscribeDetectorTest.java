@@ -287,8 +287,8 @@ public class SubscribeDetectorTest extends LintDetectorTest {
 
 
     public void testSubscribeCheckRx2() throws Exception {
-        String result = lintProject(TestFiles.copy("rxjava-2.0.5.jar", "libs/rxjava2.jar", this),
-                TestFiles.copy("reactive-streams-1.0.0.final.jar", "libs/reactive-streams-1.0.0.final.jar", this),
+        String result = lintProject(TestFiles.copy("rxjava-2.2.2.jar", "libs/rxjava2.jar", this),
+                TestFiles.copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar", this),
                 TestFiles.copy("testjavalib.jar", "libs/testjavalib.jar", this),
                 TestFiles.java("package nl.littlerobots.testproject;\n" +
                         "\n" +
@@ -656,8 +656,8 @@ public class SubscribeDetectorTest extends LintDetectorTest {
     }
 
     public void testOnErrorComplete() throws Exception {
-        String result = lintProject(TestFiles.copy("rxjava-2.0.5.jar", "libs/rxjava2.jar", this),
-                TestFiles.copy("reactive-streams-1.0.0.final.jar", "libs/reactive-streams-1.0.0.final.jar", this),
+        String result = lintProject(TestFiles.copy("rxjava-2.2.2.jar", "libs/rxjava2.jar", this),
+                TestFiles.copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar", this),
                 TestFiles.copy("testjavalib.jar", "libs/testjavalib.jar", this),
                 TestFiles.java("package nl.littlerobots.testproject;\n" +
                         "\n" +
@@ -718,6 +718,171 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                 "        Maybe.just(\"test\").onErrorReturnItem(\"test\").map(v -> v).subscribe();\n" +
                 "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
                 "7 errors, 0 warnings\n", result);
+    }
+
+    public void testAutodispose() throws Exception {
+        lint().files(
+                copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
+                copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
+                copy("autodispose-1.0.0.jar", "libs/autodispose.jar"),
+                java("package nl.littlerobots.testproject;\n" +
+                        "\n" +
+                        "import com.uber.autodispose.AutoDispose;\n" +
+                        "\n" +
+                        "import org.reactivestreams.Subscriber;\n" +
+                        "import org.reactivestreams.Subscription;\n" +
+                        "\n" +
+                        "import io.reactivex.Completable;\n" +
+                        "import io.reactivex.CompletableObserver;\n" +
+                        "import io.reactivex.Flowable;\n" +
+                        "import io.reactivex.Maybe;\n" +
+                        "import io.reactivex.MaybeObserver;\n" +
+                        "import io.reactivex.Observable;\n" +
+                        "import io.reactivex.Observer;\n" +
+                        "import io.reactivex.Single;\n" +
+                        "import io.reactivex.SingleObserver;\n" +
+                        "import io.reactivex.disposables.Disposable;\n" +
+                        "\n" +
+                        "public class AutodisposeTest {\n" +
+                        "\n" +
+                        "    public void errorHandlerMissing() {\n" +
+                        "        Observable.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                        "        Flowable.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                        "        Maybe.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                        "        Single.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                        "        Completable.complete().as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    public void withErrorHandling() {\n" +
+                        "        Observable.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe(s -> {\n" +
+                        "\n" +
+                        "        }, t -> {\n" +
+                        "\n" +
+                        "        });\n" +
+                        "\n" +
+                        "        Observable.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe(new Observer<String>() {\n" +
+                        "            @Override\n" +
+                        "            public void onSubscribe(Disposable d) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onNext(String s) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onError(Throwable e) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onComplete() {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "        });\n" +
+                        "\n" +
+                        "        Flowable.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe(r -> {}, t -> {});\n" +
+                        "        Flowable.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe(new Subscriber<String>() {\n" +
+                        "            @Override\n" +
+                        "            public void onSubscribe(Subscription s) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onNext(String s) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onError(Throwable t) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onComplete() {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "        });\n" +
+                        "\n" +
+                        "        Maybe.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe(r -> {}, v -> {});\n" +
+                        "        Maybe.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe(new MaybeObserver<String>() {\n" +
+                        "            @Override\n" +
+                        "            public void onSubscribe(Disposable d) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onSuccess(String s) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onError(Throwable e) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onComplete() {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "        });\n" +
+                        "        Single.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe(r -> {}, t -> {});\n" +
+                        "        Single.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe(new SingleObserver<String>() {\n" +
+                        "            @Override\n" +
+                        "            public void onSubscribe(Disposable d) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onSuccess(String s) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onError(Throwable e) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "        });\n" +
+                        "\n" +
+                        "        Completable.complete().as(AutoDispose.autoDisposable(Completable.complete())).subscribe(() -> {\n" +
+                        "\n" +
+                        "        }, t -> {});\n" +
+                        "\n" +
+                        "        Completable.complete().as(AutoDispose.autoDisposable(Completable.complete())).subscribe(new CompletableObserver() {\n" +
+                        "            @Override\n" +
+                        "            public void onSubscribe(Disposable d) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onComplete() {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onError(Throwable e) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "        }); \n" +
+                        "    }\n" +
+                        "}\n")
+        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expect("src/nl/littlerobots/testproject/AutodisposeTest.java:22: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Observable.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "src/nl/littlerobots/testproject/AutodisposeTest.java:23: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Flowable.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "src/nl/littlerobots/testproject/AutodisposeTest.java:24: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Maybe.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "src/nl/littlerobots/testproject/AutodisposeTest.java:25: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Single.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "src/nl/littlerobots/testproject/AutodisposeTest.java:26: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "        Completable.complete().as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "5 errors, 0 warnings");
     }
 
     @Override

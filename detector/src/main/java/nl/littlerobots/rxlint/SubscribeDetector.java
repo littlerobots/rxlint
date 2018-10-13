@@ -44,7 +44,6 @@ public class SubscribeDetector extends Detector implements Detector.UastScanner 
         return Collections.singletonList("subscribe");
     }
 
-
     @Override
     public void visitMethod(JavaContext context, UCallExpression node, PsiMethod method) {
         for (SubscriberCheck check : CHECKS) {

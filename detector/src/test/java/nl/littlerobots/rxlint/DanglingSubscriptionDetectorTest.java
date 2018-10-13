@@ -38,8 +38,8 @@ public class DanglingSubscriptionDetectorTest extends LintDetectorTest {
 
     public void testSubscribeCheck() throws Exception {
         String result = lintProject(TestFiles.copy("rxjava-1.3.0.jar", "libs/rxjava.jar", this),
-                TestFiles.copy("rxjava-2.0.5.jar", "libs/rxjava2.jar", this),
-                TestFiles.copy("reactive-streams-1.0.0.final.jar", "libs/reactive-streams-1.0.0.final.jar", this),
+                TestFiles.copy("rxjava-2.2.2.jar", "libs/rxjava2.jar", this),
+                TestFiles.copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar", this),
                 TestFiles.java("package nl.littlerobots.testproject;\n" +
                         "\n" +
                         "import io.reactivex.Observer;\n" +

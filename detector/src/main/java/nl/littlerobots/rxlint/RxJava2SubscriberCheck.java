@@ -24,25 +24,41 @@ public class RxJava2SubscriberCheck implements SubscribeDetector.SubscriberCheck
     private static final String COMPLETABLE_TYPE = "io.reactivex.Completable";
     private static final String SINGLE_TYPE = "io.reactivex.Single";
     private static final String MAYBE_TYPE = "io.reactivex.Maybe";
+    private static final String AUTODISPOSE_OBSERVABLE_PROXY_TYPE = "com.uber.autodispose.ObservableSubscribeProxy";
+    private static final String AUTODISPOSE_FLOWABLE_PROXY_TYPE = "com.uber.autodispose.FlowableSubscribeProxy";
+    private static final String AUTODISPOSE_COMPLETABLE_PROXY_TYPE = "com.uber.autodispose.CompletableSubscribeProxy";
+    private static final String AUTODISPOSE_SINGLE_PROXY_TYPE = "com.uber.autodispose.SingleSubscribeProxy";
+    private static final String AUTODISPOSE_MAYBE_PROXY_TYPE = "com.uber.autodispose.MaybeSubscribeProxy";
 
-    private static Map<String, List<String>> ERROR_HANDLING_OPERATORS = new HashMap<String, List<String>>(5);
+    private static final List<String> TYPES = Arrays.asList(OBSERVABLE_TYPE,
+            FLOWABLE_TYPE,
+            COMPLETABLE_TYPE,
+            SINGLE_TYPE,
+            MAYBE_TYPE,
+            AUTODISPOSE_OBSERVABLE_PROXY_TYPE,
+            AUTODISPOSE_FLOWABLE_PROXY_TYPE,
+            AUTODISPOSE_COMPLETABLE_PROXY_TYPE,
+            AUTODISPOSE_SINGLE_PROXY_TYPE,
+            AUTODISPOSE_MAYBE_PROXY_TYPE);
+
+    private static Map<String, List<String>> ERROR_HANDLING_OPERATORS = new HashMap<String, List<String>>(10);
 
     static {
         ERROR_HANDLING_OPERATORS.put(OBSERVABLE_TYPE, Collections.singletonList("onErrorReturnItem("));
         ERROR_HANDLING_OPERATORS.put(FLOWABLE_TYPE, Collections.singletonList("onErrorReturnItem("));
         ERROR_HANDLING_OPERATORS.put(COMPLETABLE_TYPE, Collections.singletonList("onErrorComplete()"));
         ERROR_HANDLING_OPERATORS.put(MAYBE_TYPE, Arrays.asList("onErrorComplete()", "onErrorReturnItem("));
+        ERROR_HANDLING_OPERATORS.put(AUTODISPOSE_OBSERVABLE_PROXY_TYPE, Collections.singletonList("onErrorReturnItem("));
+        ERROR_HANDLING_OPERATORS.put(AUTODISPOSE_FLOWABLE_PROXY_TYPE, Collections.singletonList("onErrorReturnItem("));
+        ERROR_HANDLING_OPERATORS.put(AUTODISPOSE_COMPLETABLE_PROXY_TYPE, Collections.singletonList("onErrorComplete()"));
+        ERROR_HANDLING_OPERATORS.put(AUTODISPOSE_MAYBE_PROXY_TYPE, Arrays.asList("onErrorComplete()", "onErrorReturnItem("));
     }
 
     @Override
     public boolean isMissingOnError(UCallExpression node, PsiMethod method) {
         PsiClass clz = method.getContainingClass();
         String type = clz.getQualifiedName();
-        if (OBSERVABLE_TYPE.equals(type) ||
-                FLOWABLE_TYPE.equals(type) ||
-                COMPLETABLE_TYPE.equals(type) ||
-                SINGLE_TYPE.equals(type) ||
-                MAYBE_TYPE.equals(type)) {
+        if (TYPES.contains(type)) {
             return hasNoErrorHandling(method) && canProduceError(node, type);
         }
         return false;
