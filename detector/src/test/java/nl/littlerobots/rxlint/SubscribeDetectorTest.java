@@ -720,6 +720,36 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                 "7 errors, 0 warnings\n", result);
     }
 
+    public void testOnErrorHandlingOperatorsAutoDispose() {
+        lint().files(
+                copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
+                copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
+                copy("autodispose-1.0.0.jar", "libs/autodispose.jar"),
+                java("package nl.littlerobots.testproject;\n" +
+                        "\n" +
+                        "\n" +
+                        "import com.uber.autodispose.AutoDispose;\n" +
+                        "\n" +
+                        "import io.reactivex.Completable;\n" +
+                        "import io.reactivex.Flowable;\n" +
+                        "import io.reactivex.Maybe;\n" +
+                        "import io.reactivex.Observable;\n" +
+                        "\n" +
+                        "public class AutoDisposeOnErrorOperator {\n" +
+                        "    public void autoDisposeOnerrorHandling() {\n" +
+                        "        Completable.fromAction(() -> {\n" +
+                        "\n" +
+                        "        }).onErrorComplete().as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                        "\n" +
+                        "        Observable.just(\"test\").onErrorReturnItem(\"ha ha\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                        "        Flowable.just(\"test\").onErrorReturnItem(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                        "        Maybe.just(\"test\").onErrorComplete().as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                        "        Maybe.just(\"test\").onErrorReturnItem(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
+                        "    }\n" +
+                        "}\n")
+        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expect("No warnings.");
+    }
+
     public void testErrorHandlingOperatorKotlin() {
         lint().files(
                 copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),

@@ -9,6 +9,7 @@ import com.intellij.psi.util.TypeConversionUtil;
 
 import org.jetbrains.uast.UCallExpression;
 import org.jetbrains.uast.UExpression;
+import org.jetbrains.uast.UQualifiedReferenceExpression;
 import org.jetbrains.uast.UastUtils;
 
 import java.util.Arrays;
@@ -41,6 +42,12 @@ public class RxJava2SubscriberCheck implements SubscribeDetector.SubscriberCheck
             AUTODISPOSE_SINGLE_PROXY_TYPE,
             AUTODISPOSE_MAYBE_PROXY_TYPE);
 
+    private static final List<String> AUTODISPOSE_TYPES = Arrays.asList(AUTODISPOSE_OBSERVABLE_PROXY_TYPE,
+            AUTODISPOSE_FLOWABLE_PROXY_TYPE,
+            AUTODISPOSE_COMPLETABLE_PROXY_TYPE,
+            AUTODISPOSE_SINGLE_PROXY_TYPE,
+            AUTODISPOSE_MAYBE_PROXY_TYPE);
+
     private static Map<String, List<ErrorHandlingOperator>> ERROR_HANDLING_OPERATORS = new HashMap<String, List<ErrorHandlingOperator>>(10);
 
     static {
@@ -66,7 +73,11 @@ public class RxJava2SubscriberCheck implements SubscribeDetector.SubscriberCheck
     }
 
     private boolean canProduceError(UCallExpression node, String type) {
-        return !isErrorSuppressingOperator(node.getReceiver(), type);
+        UExpression receiver = node.getReceiver();
+        if (AUTODISPOSE_TYPES.contains(type) && receiver instanceof UQualifiedReferenceExpression) {
+            receiver = ((UQualifiedReferenceExpression) receiver).getReceiver();
+        }
+        return !isErrorSuppressingOperator(receiver, type);
     }
 
     private boolean isErrorSuppressingOperator(UExpression receiver, String type) {
@@ -120,7 +131,7 @@ public class RxJava2SubscriberCheck implements SubscribeDetector.SubscriberCheck
             this(name, false);
         }
 
-        public boolean matches(PsiMethod method) {
+        boolean matches(PsiMethod method) {
             return name.equals(method.getName()) && ((hasParameter && method.getParameterList().getParametersCount() == 1) || (!hasParameter && method.getParameterList().isEmpty()));
         }
     }
