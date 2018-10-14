@@ -31,7 +31,7 @@ As of 1.7.0 `rxlint` supports [`RxKotlin`][RxKotlin]s `subscribeBy` operator and
 Adding `rxlint` to your project is easy, just add the following dependency to your `build.gradle`:
 
 ```
-debugImplementation 'nl.littlerobots.rxlint:rxlint:<latest version>'
+implementation 'nl.littlerobots.rxlint:rxlint:<latest version>'
 ```
 
 Once added to your project an error will be shown like this:
