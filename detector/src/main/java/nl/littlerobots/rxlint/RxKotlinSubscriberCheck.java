@@ -7,7 +7,6 @@ import com.intellij.psi.util.TypeConversionUtil;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.uast.UCallExpression;
-import org.jetbrains.uast.kotlin.KotlinUFunctionCallExpression;
 
 import static nl.littlerobots.rxlint.ObservableTypesUtil.RXJAVA_TYPES;
 import static nl.littlerobots.rxlint.ObservableTypesUtil.isErrorSuppressingOperator;
@@ -23,20 +22,21 @@ public class RxKotlinSubscriberCheck extends UElementHandler {
 
     @Override
     public void visitCallExpression(@NotNull UCallExpression node) {
-        if ("subscribeBy".equals(node.getMethodName()) && node instanceof KotlinUFunctionCallExpression) {
+        if ("subscribeBy".equals(node.getMethodName())) {
             PsiType type = node.getReceiverType();
             String erasedType = TypeConversionUtil.erasure(type).getCanonicalText();
             if (RXJAVA_TYPES.contains(erasedType)) {
-                if (!isErrorSuppressingOperator(node.getReceiver(), erasedType) && !handlesError((KotlinUFunctionCallExpression) node)) {
+                if (!isErrorSuppressingOperator(node.getReceiver(), erasedType) && !handlesError(node)) {
                     report(context, node);
                 }
             }
         }
     }
 
-    private boolean handlesError(KotlinUFunctionCallExpression expression) {
+    private boolean handlesError(UCallExpression expression) {
         for (int i = 0; i < expression.getValueArgumentCount(); i++) {
-            if ("kotlin.jvm.functions.Function1<? super java.lang.Throwable,? extends kotlin.Unit>".equals(expression.getValueArguments().get(i).getExpressionType().getCanonicalText())) {
+            PsiType type = expression.getValueArguments().get(i).getExpressionType();
+            if (type != null && type.equalsToText("kotlin.jvm.functions.Function1<? super java.lang.Throwable,? extends kotlin.Unit>")) {
                 return true;
             }
         }
