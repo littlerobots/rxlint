@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 class ObservableTypesUtil {
-    static final List<String> ALL_TYPES = new ArrayList<String>(RXJAVA_TYPES.size() + AUTODISPOSE_TYPES.size());
     private static final String OBSERVABLE_TYPE = "io.reactivex.Observable";
     private static final String FLOWABLE_TYPE = "io.reactivex.Flowable";
     private static final String COMPLETABLE_TYPE = "io.reactivex.Completable";
@@ -38,6 +37,8 @@ class ObservableTypesUtil {
             AUTODISPOSE_SINGLE_PROXY_TYPE,
             AUTODISPOSE_MAYBE_PROXY_TYPE);
     private static Map<String, List<ErrorHandlingOperator>> ERROR_HANDLING_OPERATORS = new HashMap<String, List<ErrorHandlingOperator>>(10);
+
+    static final List<String> ALL_TYPES = new ArrayList<String>(RXJAVA_TYPES.size() + AUTODISPOSE_TYPES.size());
 
     static {
         ALL_TYPES.addAll(RXJAVA_TYPES);
