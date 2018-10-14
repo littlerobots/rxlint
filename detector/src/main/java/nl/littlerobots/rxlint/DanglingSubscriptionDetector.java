@@ -16,24 +16,29 @@
 
 package nl.littlerobots.rxlint;
 
+import com.android.tools.lint.client.api.UElementHandler;
 import com.android.tools.lint.detector.api.Category;
 import com.android.tools.lint.detector.api.Detector;
 import com.android.tools.lint.detector.api.Implementation;
 import com.android.tools.lint.detector.api.Issue;
 import com.android.tools.lint.detector.api.JavaContext;
-import com.android.tools.lint.detector.api.LintUtils;
 import com.android.tools.lint.detector.api.Scope;
 import com.android.tools.lint.detector.api.Severity;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiType;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.uast.UBlockExpression;
 import org.jetbrains.uast.UCallExpression;
 import org.jetbrains.uast.UElement;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.android.tools.lint.detector.api.Lint.skipParentheses;
 
 public class DanglingSubscriptionDetector extends Detector implements Detector.UastScanner {
 
@@ -52,20 +57,28 @@ public class DanglingSubscriptionDetector extends Detector implements Detector.U
     }
 
 
+    private static void reportIfNotHandled(JavaContext context, UElement node, String message) {
+        UElement element = skipParentheses(node.getUastParent()).getUastParent();
+        if (element instanceof UBlockExpression) {
+            context.report(ISSUE, node, context.getLocation(node), message);
+        }
+    }
+
+    static void reportIfNotHandled(JavaContext context, UElement node) {
+        reportIfNotHandled(context, node, "No reference to the disposable is kept");
+    }
+
     @Override
     public void visitMethod(JavaContext context, UCallExpression node, PsiMethod method) {
         super.visitMethod(context, node, method);
         if (isRxSubscribeableClass(method.getContainingClass()) && !PsiType.VOID.equals(method.getReturnType())) {
-            UElement element = LintUtils.skipParentheses(node.getUastParent()).getUastParent();
-            if (element instanceof UBlockExpression) {
-                String message;
-                if (isRx2(method.getContainingClass())) {
-                    message = "No reference to the disposable is kept";
-                } else {
-                    message = "No reference to the subscription is kept";
-                }
-                context.report(ISSUE, node, context.getLocation(node), message);
+            String message;
+            if (isRx2(method.getContainingClass())) {
+                message = "No reference to the disposable is kept";
+            } else {
+                message = "No reference to the subscription is kept";
             }
+            reportIfNotHandled(context, node, message);
         }
     }
 
@@ -75,5 +88,19 @@ public class DanglingSubscriptionDetector extends Detector implements Detector.U
 
     private boolean isRxSubscribeableClass(PsiClass clz) {
         return OBSERVABLE_TYPES.contains(clz.getQualifiedName());
+    }
+
+    @Nullable
+    @Override
+    public List<Class<? extends UElement>> getApplicableUastTypes() {
+        ArrayList<Class<? extends UElement>> result = new ArrayList<Class<? extends UElement>>();
+        result.add(UCallExpression.class);
+        return result;
+    }
+
+    @Nullable
+    @Override
+    public UElementHandler createUastHandler(@NotNull JavaContext context) {
+        return new RxKotlinDanglingSubscriptionCheck(context);
     }
 }

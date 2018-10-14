@@ -16,6 +16,7 @@
 
 package nl.littlerobots.rxlint;
 
+import com.android.tools.lint.client.api.UElementHandler;
 import com.android.tools.lint.detector.api.Category;
 import com.android.tools.lint.detector.api.Detector;
 import com.android.tools.lint.detector.api.Implementation;
@@ -25,8 +26,12 @@ import com.android.tools.lint.detector.api.Scope;
 import com.android.tools.lint.detector.api.Severity;
 import com.intellij.psi.PsiMethod;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.uast.UCallExpression;
+import org.jetbrains.uast.UElement;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,11 +49,15 @@ public class SubscribeDetector extends Detector implements Detector.UastScanner 
         return Collections.singletonList("subscribe");
     }
 
+    static void report(JavaContext context, UElement node) {
+        context.report(ISSUE, node, context.getLocation(node), "Subscriber is missing onError");
+    }
+
     @Override
-    public void visitMethod(JavaContext context, UCallExpression node, PsiMethod method) {
+    public void visitMethod(@NotNull JavaContext context, @NotNull UCallExpression node, @NotNull PsiMethod method) {
         for (SubscriberCheck check : CHECKS) {
             if (check.isMissingOnError(node, method)) {
-                context.report(ISSUE, node, context.getLocation(node), "Subscriber is missing onError");
+                report(context, node);
                 return;
             }
         }
@@ -56,5 +65,19 @@ public class SubscribeDetector extends Detector implements Detector.UastScanner 
 
     interface SubscriberCheck {
         boolean isMissingOnError(UCallExpression node, PsiMethod method);
+    }
+
+    @Nullable
+    @Override
+    public List<Class<? extends UElement>> getApplicableUastTypes() {
+        ArrayList<Class<? extends UElement>> result = new ArrayList<Class<? extends UElement>>();
+        result.add(UCallExpression.class);
+        return result;
+    }
+
+    @Nullable
+    @Override
+    public UElementHandler createUastHandler(@NotNull JavaContext context) {
+        return new RxKotlinSubscriberCheck(context);
     }
 }

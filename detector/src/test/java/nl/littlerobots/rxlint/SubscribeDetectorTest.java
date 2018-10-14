@@ -18,6 +18,7 @@ package nl.littlerobots.rxlint;
 
 import com.android.tools.lint.checks.infrastructure.LintDetectorTest;
 import com.android.tools.lint.checks.infrastructure.TestFiles;
+import com.android.tools.lint.checks.infrastructure.TestLintTask;
 import com.android.tools.lint.detector.api.Detector;
 import com.android.tools.lint.detector.api.Issue;
 
@@ -936,6 +937,28 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                 "        Completable.complete().as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
                 "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
                 "5 errors, 0 warnings");
+    }
+
+    public void testRxKotlinSubscribeBy() {
+        TestLintTask.lint().files(
+                copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
+                copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
+                copy("rxkotlin-2.3.0.jar", "libs/rxkotlin.jar"),
+                kotlin("package nl.littlerobots.test\n" +
+                        "\n" +
+                        "import io.reactivex.Observable\n" +
+                        "import io.reactivex.rxkotlin.subscribeBy\n" +
+                        "\n" +
+                        "\n" +
+                        "fun test() {\n" +
+                        "    Observable.just(\"test\").subscribeBy { }\n" +
+                        "    Observable.just(\"test\").onErrorReturnItem(\"test\").subscribeBy { }\n" +
+                        "    Observable.just(\"test\").subscribeBy(onError = {})\n" +
+                        "}")
+        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expect("src/nl/littlerobots/test/test.kt:8: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "    Observable.just(\"test\").subscribeBy { }\n" +
+                "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "1 errors, 0 warnings");
     }
 
     @Override
