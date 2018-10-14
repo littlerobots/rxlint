@@ -5,8 +5,9 @@ Version 1.7.0-SNAPSHOT
 ----------------------
 * When the `onErrorComplete()` or `onErrorReturnItem()` operator is used as a last operator before `subscribe()` no missing error handler will be flagged.
 This only works for RxJava 2.x (see below)
-* In this version support voor RxJava version 1.x is depreciated. Existing checks will keep working, but no new checks will be added.
-* Support missing onError check when using `autodispose`
+* In this version support for RxJava version 1.x is deprecated. Existing checks will keep working until RxLint 2.0, but no new checks will be added.
+* Support missing onError check when using `AutoDispose`
+* Support for detecting subscription leaks and missing onError when using `RxKotlin` `subscribeBy` (in Kotlin code only) 
 
 Version 1.6.1
 -----------

@@ -23,12 +23,15 @@ Android in particular because a sequence like `observable.observeOn(mainThread()
 default computation scheduler, and not the `mainThread()` scheduler like one might think. If the subscriber is accessing views on any other thread than the main thread, will throw
 an exception at runtime. This check is a warning by default.
  
+### Third party library support
+As of 1.7.0 `rxlint` supports [`RxKotlin`][RxKotlin]s `subscribeBy` operator and checking of subscriptions that are managed by [`AutoDispose`][AutoDispose].
+ 
 ## Using
 
 Adding `rxlint` to your project is easy, just add the following dependency to your `build.gradle`:
 
 ```
-compile 'nl.littlerobots.rxlint:rxlint:<latest version>'
+debugImplementation 'nl.littlerobots.rxlint:rxlint:<latest version>'
 ```
 
 Once added to your project an error will be shown like this:
@@ -65,3 +68,5 @@ Refer to the [tools documentation on lint][3] for more info.
 [1]:https://github.com/ReactiveX/RxJava
 [2]:http://reactivex.io/RxJava/javadoc/io/reactivex/schedulers/Schedulers.html
 [3]:http://tools.android.com/tips/lint/suppressing-lint-warnings
+[RxKotlin]: https://github.com/ReactiveX/RxKotlin
+[AutoDispose]: https://github.com/uber/AutoDispose
