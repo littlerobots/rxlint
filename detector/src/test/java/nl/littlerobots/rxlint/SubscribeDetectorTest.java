@@ -961,6 +961,26 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                 "1 errors, 0 warnings");
     }
 
+    public void testRxKotlinSubscribeByWithMethodReference() {
+        TestLintTask.lint().files(
+                copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
+                copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
+                copy("rxkotlin-2.3.0.jar", "libs/rxkotlin.jar"),
+                kotlin("package nl.littlerobots.rxlinttest\n" +
+                        "\n" +
+                        "import io.reactivex.Observable\n" +
+                        "import io.reactivex.rxkotlin.subscribeBy\n" +
+                        "\n" +
+                        "fun test() {\n" +
+                        "    val d2 = Observable.just(\"test\").subscribeBy(onError = ::handleError)\n" +
+                        "}\n" +
+                        "\n" +
+                        "private fun handleError(throwable: Throwable) {\n" +
+                        "\n" +
+                        "}")
+        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expectClean();
+    }
+
     @Override
     protected boolean allowCompilationErrors() {
         return false;
