@@ -1,7 +1,11 @@
 Change Log
 ==========
 
-Version 1.7.0-SNAPSHOT
+Version 1.7.1-SNAPSHOT
+----------------------
+* Fixed an issue in `subscribeBy` detection that caused a false positive when using a function reference (#30)
+
+Version 1.7.0
 ----------------------
 * When the `onErrorComplete()` or `onErrorReturnItem()` operator is used as a last operator before `subscribe()` no missing error handler will be flagged.
 This only works for RxJava 2.x (see below)
