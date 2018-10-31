@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 1.7.2-SNAPSHOT
+----------------------
+* Ready for new adventures!
+
 Version 1.7.1
 ----------------------
 * Fixed an issue in `subscribeBy` detection that caused a false positive when using a function reference (#30)
