@@ -37,6 +37,18 @@ public class SubscribeDetectorTest extends LintDetectorTest {
         return Collections.singletonList(SubscribeDetector.ISSUE);
     }
 
+    private TestFile rxKotlinStub = new TestFile.KotlinTestFile().to("io/reactivex/rxkotlin/subscribers.kt").within("src").withSource("package io.reactivex.rxkotlin\n" +
+            "\n" +
+            "import io.reactivex.Observable\n" +
+            "import io.reactivex.disposables.Disposable\n" +
+            "import io.reactivex.disposables.Disposables\n" +
+            "\n" +
+            "fun <T : Any> Observable<T>.subscribeBy(\n" +
+            "    onError: (Throwable) -> Unit = {},\n" +
+            "    onComplete: () -> Unit = {},\n" +
+            "    onNext: (T) -> Unit = {}\n" +
+            "): Disposable = Disposables.disposed()");
+
     public void testSubscribeCheckRx1() throws Exception {
         String result = lintProject(TestFiles.copy("rxjava-1.3.0.jar", "libs/rxjava.jar", this),
                 TestFiles.copy("testjavalib.jar", "libs/testjavalib.jar", this),
@@ -943,7 +955,7 @@ public class SubscribeDetectorTest extends LintDetectorTest {
         TestLintTask.lint().files(
                 copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
                 copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
-                copy("rxkotlin-2.3.0.jar", "libs/rxkotlin.jar"),
+                rxKotlinStub,
                 kotlin("package nl.littlerobots.test\n" +
                         "\n" +
                         "import io.reactivex.Observable\n" +
@@ -965,7 +977,7 @@ public class SubscribeDetectorTest extends LintDetectorTest {
         TestLintTask.lint().files(
                 copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
                 copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
-                copy("rxkotlin-2.3.0.jar", "libs/rxkotlin.jar"),
+                rxKotlinStub,
                 kotlin("package nl.littlerobots.rxlinttest\n" +
                         "\n" +
                         "import io.reactivex.Observable\n" +
@@ -981,6 +993,53 @@ public class SubscribeDetectorTest extends LintDetectorTest {
         ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expectClean();
     }
 
+    public void testRxKotlinSubscribeByWithInvokingReferenceExpression() {
+        TestLintTask.lint().files(
+                copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
+                copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
+                rxKotlinStub,
+                kotlin("package nl.littlerobots.rxlinttest\n" +
+                        "\n" +
+                        "import io.reactivex.Observable\n" +
+                        "import io.reactivex.rxkotlin.subscribeBy\n" +
+                        "\n" +
+                        "\n" +
+                        "fun test() {\n" +
+                        "    val onError: (Throwable) -> Unit = {}\n" +
+                        "    val d2 = Observable.just(\"test\").subscribeBy(onError = onError::invoke)\n" +
+                        "}")
+        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expectClean();
+    }
+
+    public void testRxKotlinSubscribeByWithInvokingObjectReference() {
+        TestLintTask.lint().files(
+                copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
+                copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
+                rxKotlinStub,
+                kotlin("package nl.littlerobots.rxlinttest\n" +
+                        "\n" +
+                        "import io.reactivex.Observable\n" +
+                        "import io.reactivex.rxkotlin.subscribeBy\n" +
+                        "\n" +
+                        "class HandlerThing : Action1<Throwable> {\n" +
+                        "    override fun call(arg: Throwable) {\n" +
+                        "        \n" +
+                        "    } \n" +
+                        "}\n" +
+                        "\n" +
+                        "interface Action1<T> {\n" +
+                        "    fun call(arg: T)\n" +
+                        "}\n" +
+                        "\n" +
+                        "class Test {\n" +
+                        "    val onError: Action1<Throwable> = nl.littlerobots.rxlinttest.HandlerThing()\n" +
+                        "\n" +
+                        "    fun test() {\n" +
+                        "        val d2 = Observable.just(\"test\").subscribeBy(onError = onError::call)\n" +
+                        "    }\n" +
+                        "}")
+        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expectClean();
+    }
     @Override
     protected boolean allowCompilationErrors() {
         return false;

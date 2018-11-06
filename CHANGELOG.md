@@ -3,7 +3,7 @@ Change Log
 
 Version 1.7.2-SNAPSHOT
 ----------------------
-* Ready for new adventures!
+* Rewrote the `subscribeBy` support
 
 Version 1.7.1
 ----------------------

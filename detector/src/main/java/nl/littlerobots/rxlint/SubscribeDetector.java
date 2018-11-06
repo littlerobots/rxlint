@@ -16,7 +16,6 @@
 
 package nl.littlerobots.rxlint;
 
-import com.android.tools.lint.client.api.UElementHandler;
 import com.android.tools.lint.detector.api.Category;
 import com.android.tools.lint.detector.api.Detector;
 import com.android.tools.lint.detector.api.Implementation;
@@ -25,15 +24,19 @@ import com.android.tools.lint.detector.api.JavaContext;
 import com.android.tools.lint.detector.api.Scope;
 import com.android.tools.lint.detector.api.Severity;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiParameter;
+import com.intellij.psi.util.TypeConversionUtil;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.uast.UCallExpression;
 import org.jetbrains.uast.UElement;
+import org.jetbrains.uast.UExpression;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
+import static nl.littlerobots.rxlint.ObservableTypesUtil.isErrorSuppressingOperator;
 
 public class SubscribeDetector extends Detector implements Detector.UastScanner {
 
@@ -44,40 +47,50 @@ public class SubscribeDetector extends Detector implements Detector.UastScanner 
                     new Implementation(SubscribeDetector.class, Scope.JAVA_FILE_SCOPE));
     private static final SubscriberCheck[] CHECKS = new SubscriberCheck[]{new RxJavaSubscriberCheck(), new RxJava2SubscriberCheck()};
 
-    @Override
-    public List<String> getApplicableMethodNames() {
-        return Collections.singletonList("subscribe");
-    }
-
-    static void report(JavaContext context, UElement node) {
+    private static void report(JavaContext context, UElement node) {
         context.report(ISSUE, node, context.getLocation(node), "Subscriber is missing onError");
     }
 
     @Override
+    public List<String> getApplicableMethodNames() {
+        return Arrays.asList("subscribe", "subscribeBy");
+    }
+
+    @Override
     public void visitMethod(@NotNull JavaContext context, @NotNull UCallExpression node, @NotNull PsiMethod method) {
-        for (SubscriberCheck check : CHECKS) {
-            if (check.isMissingOnError(node, method)) {
-                report(context, node);
+        if ("subscribeBy".equals(method.getName())) {
+            handleSubscribeBy(context, node, method);
+        } else {
+            for (SubscriberCheck check : CHECKS) {
+                if (check.isMissingOnError(node, method)) {
+                    report(context, node);
+                    return;
+                }
+            }
+        }
+    }
+
+    private void handleSubscribeBy(@NotNull JavaContext context, @NotNull UCallExpression node, @NotNull PsiMethod method) {
+        if (context.getEvaluator().isMemberInClass(method, "io.reactivex.rxkotlin.SubscribersKt")) {
+            String erasedType = TypeConversionUtil.erasure(node.getReceiverType()).getCanonicalText();
+            if (isErrorSuppressingOperator(node.getReceiver(), erasedType)) {
                 return;
+            }
+            PsiMethod resolvedMethod = node.resolve();
+            if (resolvedMethod != null) {
+                Map<UExpression, PsiParameter> mapping = context.getEvaluator().computeArgumentMapping(node, resolvedMethod);
+                for (PsiParameter parameter : mapping.values()) {
+                    if ("onError".equals(parameter.getName())) {
+                        // onError has been supplied
+                        return;
+                    }
+                }
+                report(context, node);
             }
         }
     }
 
     interface SubscriberCheck {
         boolean isMissingOnError(UCallExpression node, PsiMethod method);
-    }
-
-    @Nullable
-    @Override
-    public List<Class<? extends UElement>> getApplicableUastTypes() {
-        ArrayList<Class<? extends UElement>> result = new ArrayList<Class<? extends UElement>>();
-        result.add(UCallExpression.class);
-        return result;
-    }
-
-    @Nullable
-    @Override
-    public UElementHandler createUastHandler(@NotNull JavaContext context) {
-        return new RxKotlinSubscriberCheck(context);
     }
 }
