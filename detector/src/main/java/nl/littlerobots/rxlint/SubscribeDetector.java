@@ -53,12 +53,12 @@ public class SubscribeDetector extends Detector implements Detector.UastScanner 
 
     @Override
     public List<String> getApplicableMethodNames() {
-        return Arrays.asList("subscribe", "subscribeBy");
+        return Arrays.asList("subscribe", "subscribeBy", "blockingSubscribeBy");
     }
 
     @Override
     public void visitMethod(@NotNull JavaContext context, @NotNull UCallExpression node, @NotNull PsiMethod method) {
-        if ("subscribeBy".equals(method.getName())) {
+        if ("subscribeBy".equals(method.getName()) || "blockingSubscribeBy".equals(method.getName())) {
             handleSubscribeBy(context, node, method);
         } else {
             for (SubscriberCheck check : CHECKS) {

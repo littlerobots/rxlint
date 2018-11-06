@@ -3,7 +3,7 @@ Change Log
 
 Version 1.7.2-SNAPSHOT
 ----------------------
-* Rewrote the `subscribeBy` support
+* Rewrote the `subscribeBy` support and added `blockingSubscribeBy` support for consistency
 
 Version 1.7.1
 ----------------------

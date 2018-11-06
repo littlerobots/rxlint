@@ -37,13 +37,25 @@ public class SubscribeDetectorTest extends LintDetectorTest {
         return Collections.singletonList(SubscribeDetector.ISSUE);
     }
 
-    private TestFile rxKotlinStub = new TestFile.KotlinTestFile().to("io/reactivex/rxkotlin/subscribers.kt").within("src").withSource("package io.reactivex.rxkotlin\n" +
+    private TestFile rxKotlinSubscribeByStub = new TestFile.KotlinTestFile().to("io/reactivex/rxkotlin/subscribers.kt").within("src").withSource("package io.reactivex.rxkotlin\n" +
             "\n" +
             "import io.reactivex.Observable\n" +
             "import io.reactivex.disposables.Disposable\n" +
             "import io.reactivex.disposables.Disposables\n" +
             "\n" +
             "fun <T : Any> Observable<T>.subscribeBy(\n" +
+            "    onError: (Throwable) -> Unit = {},\n" +
+            "    onComplete: () -> Unit = {},\n" +
+            "    onNext: (T) -> Unit = {}\n" +
+            "): Disposable = Disposables.disposed()");
+
+    private TestFile rxKotlinBlockingSubscribeByStub = new TestFile.KotlinTestFile().to("io/reactivex/rxkotlin/subscribers.kt").within("src").withSource("package io.reactivex.rxkotlin\n" +
+            "\n" +
+            "import io.reactivex.Observable\n" +
+            "import io.reactivex.disposables.Disposable\n" +
+            "import io.reactivex.disposables.Disposables\n" +
+            "\n" +
+            "fun <T : Any> Observable<T>.blockingSubscribeBy(\n" +
             "    onError: (Throwable) -> Unit = {},\n" +
             "    onComplete: () -> Unit = {},\n" +
             "    onNext: (T) -> Unit = {}\n" +
@@ -955,7 +967,7 @@ public class SubscribeDetectorTest extends LintDetectorTest {
         TestLintTask.lint().files(
                 copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
                 copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
-                rxKotlinStub,
+                rxKotlinSubscribeByStub,
                 kotlin("package nl.littlerobots.test\n" +
                         "\n" +
                         "import io.reactivex.Observable\n" +
@@ -973,11 +985,33 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                 "1 errors, 0 warnings");
     }
 
+    public void testRxKotlinBlockingSubscribeBy() {
+        TestLintTask.lint().files(
+                copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
+                copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
+                rxKotlinBlockingSubscribeByStub,
+                kotlin("package nl.littlerobots.test\n" +
+                        "\n" +
+                        "import io.reactivex.Observable\n" +
+                        "import io.reactivex.rxkotlin.blockingSubscribeBy\n" +
+                        "\n" +
+                        "\n" +
+                        "fun test() {\n" +
+                        "    Observable.just(\"test\").blockingSubscribeBy { }\n" +
+                        "    Observable.just(\"test\").onErrorReturnItem(\"test\").blockingSubscribeBy { }\n" +
+                        "    Observable.just(\"test\").blockingSubscribeBy(onError = {})\n" +
+                        "}")
+        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expect("src/nl/littlerobots/test/test.kt:8: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+                "    Observable.just(\"test\").blockingSubscribeBy { }\n" +
+                "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "1 errors, 0 warnings");
+    }
+
     public void testRxKotlinSubscribeByWithMethodReference() {
         TestLintTask.lint().files(
                 copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
                 copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
-                rxKotlinStub,
+                rxKotlinSubscribeByStub,
                 kotlin("package nl.littlerobots.rxlinttest\n" +
                         "\n" +
                         "import io.reactivex.Observable\n" +
@@ -997,7 +1031,7 @@ public class SubscribeDetectorTest extends LintDetectorTest {
         TestLintTask.lint().files(
                 copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
                 copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
-                rxKotlinStub,
+                rxKotlinSubscribeByStub,
                 kotlin("package nl.littlerobots.rxlinttest\n" +
                         "\n" +
                         "import io.reactivex.Observable\n" +
@@ -1015,7 +1049,7 @@ public class SubscribeDetectorTest extends LintDetectorTest {
         TestLintTask.lint().files(
                 copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
                 copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
-                rxKotlinStub,
+                rxKotlinSubscribeByStub,
                 kotlin("package nl.littlerobots.rxlinttest\n" +
                         "\n" +
                         "import io.reactivex.Observable\n" +
