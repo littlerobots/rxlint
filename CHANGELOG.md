@@ -1,6 +1,9 @@
 Change Log
 ==========
 
+Version 1.7.3-SNAPSHOT
+----------------------
+
 Version 1.7.2
 ----------------------
 * Rewrote the `subscribeBy` support and added `blockingSubscribeBy` support for consistency
