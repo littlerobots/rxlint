@@ -1,8 +1,9 @@
 Change Log
 ==========
 
-Version 1.7.3-SNAPSHOT
+Version 1.7.3
 ----------------------
+* Updated lint dependencies to prevent the "obsolete lint check" error on newer AGP versions.
 
 Version 1.7.2
 ----------------------
