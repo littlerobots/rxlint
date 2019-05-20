@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 1.7.4
+--------------
+* Updated lint dependencies to the latest 3.5 beta, which fixes a regression when linting RxKotlin code (#38)
+
 Version 1.7.3
 ----------------------
 * Updated lint dependencies to prevent the "obsolete lint check" error on newer AGP versions.
