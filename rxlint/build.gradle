@@ -18,6 +18,13 @@ android {
     }
 }
 
+afterEvaluate {
+    generateReleaseBuildConfig.enabled = false
+    generateDebugBuildConfig.enabled = false
+    generateReleaseResValues.enabled = false
+    generateDebugResValues.enabled = false
+}
+
 dependencies {
-    lintChecks project(path: ':detector', configuration: "lintChecks")
+    lintPublish project(path: ":detector")
 }

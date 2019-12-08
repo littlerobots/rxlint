@@ -34,6 +34,13 @@ Adding `rxlint` to your project is easy, just add the following dependency to yo
 implementation 'nl.littlerobots.rxlint:rxlint:<latest version>'
 ```
 
+If you are using AGP 3.5 or up you can also use
+
+```
+lintChecks 'nl.littlerobots.rxlint:dectector:<latest version>'
+```
+
+
 Once added to your project an error will be shown like this:
 
 ![Lint screenshot](lint.png)

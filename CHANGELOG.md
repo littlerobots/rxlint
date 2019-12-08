@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 1.7.5
+-------------
+* Fix packaging of the lint rules
+* Don't generate build config
+
 Version 1.7.4
 --------------
 * Updated lint dependencies to the latest 3.5 beta, which fixes a regression when linting RxKotlin code (#38)
