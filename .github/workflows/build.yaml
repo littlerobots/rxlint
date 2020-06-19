@@ -1,0 +1,16 @@
+name: rxlint build & test
+
+on: push
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Validate checksum gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Build app
+        run: ./gradlew detector:build rxlint:build
