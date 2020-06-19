@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 1.7.6
+-------------
+* Bump lint dependencies to AGP 4.0, removing the obsolete lint warning.
+
 Version 1.7.5
 -------------
 * Fix packaging of the lint rules
