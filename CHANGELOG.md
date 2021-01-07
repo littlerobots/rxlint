@@ -1,9 +1,9 @@
 Change Log
 ==========
 
-Version 1.7.7 (next version)
+Version 1.7.7
 -------------
-* nothing new yet!
+* Added support for RxJava 3, thanks to @jozuasijsling for contributing this.
 
 Version 1.7.6
 -------------
