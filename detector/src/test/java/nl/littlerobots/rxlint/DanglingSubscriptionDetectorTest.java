@@ -38,9 +38,11 @@ public class DanglingSubscriptionDetectorTest extends LintDetectorTest {
     }
 
     public void testSubscribeCheck() throws Exception {
-        String result = lintProject(TestFiles.copy("rxjava-1.3.0.jar", "libs/rxjava.jar", this),
+        String result = lintProject(
+                TestFiles.copy("rxjava-1.3.0.jar", "libs/rxjava.jar", this),
                 TestFiles.copy("rxjava-2.2.2.jar", "libs/rxjava2.jar", this),
-                TestFiles.copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar", this),
+                TestFiles.copy("rxjava-3.0.9.jar", "libs/rxjava3.jar", this),
+                TestFiles.copy("reactive-streams-1.0.3.jar", "libs/reactive-streams.jar", this),
                 TestFiles.java("package nl.littlerobots.testproject;\n" +
                         "\n" +
                         "import io.reactivex.Observer;\n" +
@@ -243,6 +245,76 @@ public class DanglingSubscriptionDetectorTest extends LintDetectorTest {
                         "            }\n" +
                         "        });\n" +
                         "    }\n" +
+                        "\n" +
+                        "    public void rx3ubscriptionWithoutSavingReturn() {\n" +
+                        "        io.reactivex.rxjava3.core.Observable.just(\"Test\").subscribe();\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    public void rx3subscriptionKeepingReference() {\n" +
+                        "        io.reactivex.rxjava3.disposables.Disposable test = io.reactivex.rxjava3.core.Observable.just(\"Test\").subscribe();\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    public void rx3subscriptionWithoutSavingReturnSubscribeWith() {\n" +
+                        "        io.reactivex.rxjava3.core.Observable.just(\"Test\").subscribeWith(new io.reactivex.rxjava3.observers.DisposableObserver<String>() {\n" +
+                        "            @Override\n" +
+                        "            public void onNext(String s) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onError(Throwable e) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onComplete() {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "        });\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    public void rx3subscriptionSavingReturnSubscribeWith() {\n" +
+                        "        io.reactivex.rxjava3.observers.DisposableObserver<String> disposable = io.reactivex.rxjava3.core.Observable.just(\"Test\").subscribeWith(new io.reactivex.rxjava3.observers.DisposableObserver<String>() {\n" +
+                        "            @Override\n" +
+                        "            public void onNext(String s) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onError(Throwable e) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onComplete() {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "        });\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    public void rx3WithObservable() {\n" +
+                        "        io.reactivex.rxjava3.core.Observable.just(\"test\").subscribe(new io.reactivex.rxjava3.observers.Observer<String>() {\n" +
+                        "            @Override\n" +
+                        "            public void onSubscribe(Disposable d) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onNext(String s) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onError(Throwable e) {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "\n" +
+                        "            @Override\n" +
+                        "            public void onComplete() {\n" +
+                        "\n" +
+                        "            }\n" +
+                        "        });\n" +
+                        "    }\n" +
                         "}\n"));
 
         assertEquals("src/nl/littlerobots/testproject/DanglingSubscriptionTest.java:16: Error: No reference to the subscription is kept [RxLeakedSubscription]\n" +
@@ -257,31 +329,49 @@ public class DanglingSubscriptionDetectorTest extends LintDetectorTest {
                 "src/nl/littlerobots/testproject/DanglingSubscriptionTest.java:143: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
                 "        io.reactivex.Observable.just(\"Test\").subscribeWith(new DisposableObserver<String>() {\n" +
                 "        ^\n" +
-                "4 errors, 0 warnings\n", result);
+                "src/nl/littlerobots/testproject/DanglingSubscriptionTest.java:205: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
+                "        io.reactivex.rxjava3.core.Observable.just(\"Test\").subscribe();\n" +
+                "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "src/nl/littlerobots/testproject/DanglingSubscriptionTest.java:213: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
+                "        io.reactivex.rxjava3.core.Observable.just(\"Test\").subscribeWith(new io.reactivex.rxjava3.observers.DisposableObserver<String>() {\n" +
+                "        ^\n" +
+                "6 errors, 0 warnings\n", result);
     }
 
     public void testRxKotlinSubscribeBy() {
         TestLintTask.lint().files(
                 copy("rxjava-2.2.2.jar", "libs/rxjava2.jar"),
-                copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar"),
+                copy("rxjava-3.0.9.jar", "libs/rxjava3.jar"),
+                copy("reactive-streams-1.0.3.jar", "libs/reactive-streams.jar"),
                 copy("rxkotlin-2.3.0.jar", "libs/rxkotlin.jar"),
+                copy("rxkotlin-3.0.1.jar", "libs/rxkotlin-rxjava3.jar"),
                 kotlin("package nl.littlerobots.test\n" +
                         "\n" +
                         "import io.reactivex.Observable\n" +
+                        "import io.reactivex.rxjava3.core.Observable as ObservableRx3\n" +
                         "import io.reactivex.rxkotlin.subscribeBy\n" +
+                        "import io.reactivex.rxjava3.kotlin.subscribeBy as subscribeByRx3\n" +
                         "\n" +
                         "\n" +
                         "fun test() {\n" +
                         "    Observable.just(\"test\").subscribeBy { }\n" +
+                        "    ObservableRx3.just(\"test\").subscribeByRx3 { }\n" +
                         "    Observable.just(\"test\").subscribeBy(onError = {})\n" +
+                        "    ObservableRx3.just(\"test\").subscribeByRx3(onError = {})\n" +
                         "}")
-        ).issues(DanglingSubscriptionDetector.ISSUE).allowCompilationErrors(false).run().expect("src/nl/littlerobots/test/test.kt:8: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
+        ).issues(DanglingSubscriptionDetector.ISSUE).allowCompilationErrors(false).run().expect("src/nl/littlerobots/test/test.kt:10: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
                 "    Observable.just(\"test\").subscribeBy { }\n" +
                 "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
-                "src/nl/littlerobots/test/test.kt:9: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
+                "src/nl/littlerobots/test/test.kt:11: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
+                "    ObservableRx3.just(\"test\").subscribeByRx3 { }\n" +
+                "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "src/nl/littlerobots/test/test.kt:12: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
                 "    Observable.just(\"test\").subscribeBy(onError = {})\n" +
                 "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
-                "2 errors, 0 warnings");
+                "src/nl/littlerobots/test/test.kt:13: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
+                "    ObservableRx3.just(\"test\").subscribeByRx3(onError = {})\n" +
+                "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "4 errors, 0 warnings");
     }
 
     @Override

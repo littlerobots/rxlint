@@ -45,7 +45,7 @@ public class SubscribeDetector extends Detector implements Detector.UastScanner 
                     "Every Observable stream can report errors that should be handled using onError. Not implementing onError will throw an exception at runtime which can be hard to debug when the error is thrown on a Scheduler that is not the invoking thread.",
                     Category.CORRECTNESS, 8, Severity.ERROR,
                     new Implementation(SubscribeDetector.class, Scope.JAVA_FILE_SCOPE));
-    private static final SubscriberCheck[] CHECKS = new SubscriberCheck[]{new RxJavaSubscriberCheck(), new RxJava2SubscriberCheck()};
+    private static final SubscriberCheck[] CHECKS = new SubscriberCheck[]{new RxJavaSubscriberCheck(), new RxJava2And3SubscriberCheck()};
 
     private static void report(JavaContext context, UElement node) {
         context.report(ISSUE, node, context.getLocation(node), "Subscriber is missing onError");
@@ -71,7 +71,9 @@ public class SubscribeDetector extends Detector implements Detector.UastScanner 
     }
 
     private void handleSubscribeBy(@NotNull JavaContext context, @NotNull UCallExpression node, @NotNull PsiMethod method) {
-        if (context.getEvaluator().isMemberInClass(method, "io.reactivex.rxkotlin.SubscribersKt")) {
+        boolean inRx2 = context.getEvaluator().isMemberInClass(method, "io.reactivex.rxkotlin.SubscribersKt");
+        boolean inRx3 = context.getEvaluator().isMemberInClass(method, "io.reactivex.rxjava3.kotlin.SubscribersKt");
+        if (inRx2 || inRx3) {
             String erasedType = TypeConversionUtil.erasure(node.getReceiverType()).getCanonicalText();
             if (isErrorSuppressingOperator(node.getReceiver(), erasedType)) {
                 return;

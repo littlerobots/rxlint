@@ -37,8 +37,10 @@ public class DefaultSchedulerDetectorTest extends LintDetectorTest {
     }
 
     public void testDefaultScheduler() throws Exception {
-        String result = lintProject(TestFiles.copy("rxjava-2.2.2.jar", "libs/rxjava2.jar", this),
-                TestFiles.copy("reactive-streams-1.0.2.jar", "libs/reactive-streams.jar", this),
+        String result = lintProject(
+                TestFiles.copy("rxjava-2.2.2.jar", "libs/rxjava2.jar", this),
+                TestFiles.copy("rxjava-3.0.9.jar", "libs/rxjava3.jar", this),
+                TestFiles.copy("reactive-streams-1.0.3.jar", "libs/reactive-streams.jar", this),
                 TestFiles.copy("testjavalib.jar", "libs/testjavalib.jar", this),
                 TestFiles.java("package nl.littlerobots.testproject;\n" +
                         "\n" +
@@ -47,12 +49,20 @@ public class DefaultSchedulerDetectorTest extends LintDetectorTest {
                         "import io.reactivex.schedulers.Schedulers;\n" +
                         "\n" +
                         "public class DefaultSchedulerTest {\n" +
-                        "    public void testDefaultScheduler() {\n" +
+                        "    public void testDefaultSchedulerRx2() {\n" +
                         "        io.reactivex.Observable<String> observable = io.reactivex.Observable.just(\"test\").delay(1, TimeUnit.SECONDS).timeout(1, TimeUnit.SECONDS);\n" +
                         "    }\n" +
                         "    \n" +
-                        "    public void testNonDefaultScheduler() {\n" +
+                        "    public void testNonDefaultSchedulerRx2() {\n" +
                         "        io.reactivex.Observable<String> observable = io.reactivex.Observable.just(\"test\").delay(1, TimeUnit.SECONDS, Schedulers.computation());\n" +
+                        "    }\n" +
+                        "    \n" +
+                        "    public void testDefaultSchedulerRx3() {\n" +
+                        "        io.reactivex.rxjava3.core.Observable<String> observable = io.reactivex.rxjava3.core.Observable.just(\"test\").delay(1, TimeUnit.SECONDS).timeout(1, TimeUnit.SECONDS);\n" +
+                        "    }\n" +
+                        "    \n" +
+                        "    public void testNonDefaultSchedulerRx3() {\n" +
+                        "        io.reactivex.rxjava3.core.Observable<String> observable = io.reactivex.rxjava3.core.Observable.just(\"test\").delay(1, TimeUnit.SECONDS, Schedulers.computation());\n" +
                         "    }\n" +
                         "}\n"));
 
@@ -62,7 +72,13 @@ public class DefaultSchedulerDetectorTest extends LintDetectorTest {
                 "src/nl/littlerobots/testproject/DefaultSchedulerTest.java:9: Warning: timeout() is using its default scheduler [RxDefaultScheduler]\n" +
                 "        io.reactivex.Observable<String> observable = io.reactivex.Observable.just(\"test\").delay(1, TimeUnit.SECONDS).timeout(1, TimeUnit.SECONDS);\n" +
                 "                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
-                "0 errors, 2 warnings\n", result);
+                "src/nl/littlerobots/testproject/DefaultSchedulerTest.java:17: Warning: delay() is using its default scheduler [RxDefaultScheduler]\n" +
+                "        io.reactivex.rxjava3.core.Observable<String> observable = io.reactivex.rxjava3.core.Observable.just(\"test\").delay(1, TimeUnit.SECONDS).timeout(1, TimeUnit.SECONDS);\n" +
+                "                                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "src/nl/littlerobots/testproject/DefaultSchedulerTest.java:17: Warning: timeout() is using its default scheduler [RxDefaultScheduler]\n" +
+                "        io.reactivex.rxjava3.core.Observable<String> observable = io.reactivex.rxjava3.core.Observable.just(\"test\").delay(1, TimeUnit.SECONDS).timeout(1, TimeUnit.SECONDS);\n" +
+                "                                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "0 errors, 4 warnings\n", result);
     }
 
     @Override

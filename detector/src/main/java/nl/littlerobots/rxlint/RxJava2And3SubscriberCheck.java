@@ -14,7 +14,7 @@ import static nl.littlerobots.rxlint.ObservableTypesUtil.ALL_TYPES;
 import static nl.littlerobots.rxlint.ObservableTypesUtil.AUTODISPOSE_TYPES;
 import static nl.littlerobots.rxlint.ObservableTypesUtil.isErrorSuppressingOperator;
 
-public class RxJava2SubscriberCheck implements SubscribeDetector.SubscriberCheck {
+public class RxJava2And3SubscriberCheck implements SubscribeDetector.SubscriberCheck {
 
     @Override
     public boolean isMissingOnError(UCallExpression node, PsiMethod method) {
@@ -50,6 +50,8 @@ public class RxJava2SubscriberCheck implements SubscribeDetector.SubscriberCheck
         }
         // if we have only one argument, check that it's not a BiConsumer
         PsiParameter parameter = method.getParameterList().getParameters()[0];
-        return !"io.reactivex.functions.BiConsumer".equals(TypeConversionUtil.erasure(parameter.getType()).getCanonicalText());
+        String canonicalClassName = TypeConversionUtil.erasure(parameter.getType()).getCanonicalText();
+        return !"io.reactivex.functions.BiConsumer".equals(canonicalClassName) &&
+                !"io.reactivex.rxjava3.functions.BiConsumer".equals(canonicalClassName);
     }
 }

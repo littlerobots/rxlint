@@ -49,7 +49,9 @@ public class DanglingSubscriptionDetector extends Detector implements Detector.U
                     new Implementation(DanglingSubscriptionDetector.class, Scope.JAVA_FILE_SCOPE));
     private static final List<String> OBSERVABLE_TYPES = Arrays.asList("rx.Observable", "rx.Single", "rx.Completable",
             "io.reactivex.Observable", "io.reactivex.Flowable",
-            "io.reactivex.Single", "io.reactivex.Maybe", "io.reactivex.Completable");
+            "io.reactivex.Single", "io.reactivex.Maybe", "io.reactivex.Completable",
+            "io.reactivex.rxjava3.core.Observable", "io.reactivex.rxjava3.core.Flowable",
+            "io.reactivex.rxjava3.core.Single", "io.reactivex.rxjava3.core.Maybe", "io.reactivex.rxjava3.core.Completable");
 
     @Override
     public List<String> getApplicableMethodNames() {
@@ -73,7 +75,7 @@ public class DanglingSubscriptionDetector extends Detector implements Detector.U
         super.visitMethod(context, node, method);
         if (isRxSubscribeableClass(method.getContainingClass()) && !PsiType.VOID.equals(method.getReturnType())) {
             String message;
-            if (isRx2(method.getContainingClass())) {
+            if (isRx2OrHigher(method.getContainingClass())) {
                 message = "No reference to the disposable is kept";
             } else {
                 message = "No reference to the subscription is kept";
@@ -82,7 +84,7 @@ public class DanglingSubscriptionDetector extends Detector implements Detector.U
         }
     }
 
-    private boolean isRx2(PsiClass clz) {
+    private boolean isRx2OrHigher(PsiClass clz) {
         return clz.getQualifiedName().startsWith("io.reactivex.");
     }
 
