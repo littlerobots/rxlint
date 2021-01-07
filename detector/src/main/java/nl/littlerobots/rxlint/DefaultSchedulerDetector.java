@@ -47,7 +47,7 @@ public class DefaultSchedulerDetector extends Detector implements Detector.UastS
 
                         if (identifier != null && identifier.getUastParent() != null) {
                             PsiMethod method = (PsiMethod) UastUtils.tryResolve(identifier.getUastParent());
-                            PsiAnnotation annotation = AnnotationUtil.findAnnotation(method, "io.reactivex.annotations.SchedulerSupport");
+                            PsiAnnotation annotation = AnnotationUtil.findAnnotation(method, "io.reactivex.annotations.SchedulerSupport", "io.reactivex.rxjava3.annotations.SchedulerSupport");
                             if (annotation != null) {
                                 String value = AnnotationUtil.getStringAttributeValue(annotation, null);
                                 if (!("none".equals(value) || "custom".equals(value))) {
