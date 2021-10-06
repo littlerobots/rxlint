@@ -1,5 +1,8 @@
 Change Log
 ==========
+Version 1.7.8
+-------------
+* Updated lint dependencies to prevent warnings
 
 Version 1.7.7
 -------------

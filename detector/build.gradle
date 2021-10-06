@@ -6,7 +6,7 @@ sourceCompatibility = 1.6
 dependencies {
     compileOnly "com.android.tools.lint:lint-api:$lintApiVersion"
     compileOnly "com.android.tools.lint:lint-checks:$lintApiVersion"
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation "com.android.tools.lint:lint:$lintApiVersion"
     testImplementation "com.android.tools.lint:lint-tests:$lintApiVersion"
     testImplementation "com.android.tools:testutils:$lintApiVersion"
@@ -26,3 +26,5 @@ jar {
 }
 
 defaultTasks 'assemble'
+
+java.targetCompatibility = JavaVersion.VERSION_1_8

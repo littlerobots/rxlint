@@ -16,13 +16,21 @@
 package nl.littlerobots.rxlint;
 
 import com.android.tools.lint.client.api.IssueRegistry;
+import com.android.tools.lint.client.api.Vendor;
 import com.android.tools.lint.detector.api.ApiKt;
 import com.android.tools.lint.detector.api.Issue;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class RxIssueRegistry extends IssueRegistry {
+
+    @Nullable
+    @Override
+    public Vendor getVendor() {
+        return new Vendor("Little Robots", "rxlint", "https://github.com/littlerobots/rxlint");
+    }
 
     @Override
     public int getApi() {

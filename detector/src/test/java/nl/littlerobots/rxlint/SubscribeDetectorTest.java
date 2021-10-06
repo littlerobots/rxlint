@@ -16,9 +16,7 @@
 
 package nl.littlerobots.rxlint;
 
-import com.android.tools.lint.checks.infrastructure.LintDetectorTest;
-import com.android.tools.lint.checks.infrastructure.TestFiles;
-import com.android.tools.lint.checks.infrastructure.TestLintTask;
+import com.android.tools.lint.checks.infrastructure.*;
 import com.android.tools.lint.detector.api.Detector;
 import com.android.tools.lint.detector.api.Issue;
 
@@ -1411,7 +1409,7 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                         "        }); \n" +
                         "    }\n" +
                         "}\n")
-        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expect("src/nl/littlerobots/testproject/AutodisposeTest.java:22: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+        ).issues(SubscribeDetector.ISSUE).testModes(TestMode.PARTIAL).allowCompilationErrors(true).run().expect("src/nl/littlerobots/testproject/AutodisposeTest.java:22: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "        Observable.just(\"test\").as(AutoDispose.autoDisposable(Completable.complete())).subscribe();\n" +
                 "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
                 "src/nl/littlerobots/testproject/AutodisposeTest.java:23: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
@@ -1467,7 +1465,7 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                         "    Observable.just(\"test\").onErrorReturnItem(\"test\").subscribeBy { }\n" +
                         "    Observable.just(\"test\").subscribeBy(onError = {})\n" +
                         "}")
-        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expect("src/nl/littlerobots/test/test.kt:8: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(true).run().expect("src/nl/littlerobots/test/test.kt:8: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "    Observable.just(\"test\").subscribeBy { }\n" +
                 "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
                 "1 errors, 0 warnings");
@@ -1489,7 +1487,7 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                         "    Observable.just(\"test\").onErrorReturnItem(\"test\").blockingSubscribeBy { }\n" +
                         "    Observable.just(\"test\").blockingSubscribeBy(onError = {})\n" +
                         "}")
-        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expect("src/nl/littlerobots/test/test.kt:8: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(true).run().expect("src/nl/littlerobots/test/test.kt:8: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "    Observable.just(\"test\").blockingSubscribeBy { }\n" +
                 "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
                 "1 errors, 0 warnings");
@@ -1511,7 +1509,7 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                         "    Observable.just(\"test\").onErrorReturnItem(\"test\").blockingSubscribeBy { }\n" +
                         "    Observable.just(\"test\").blockingSubscribeBy(onError = {})\n" +
                         "}")
-        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expect("src/nl/littlerobots/test/test.kt:8: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
+        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(true).run().expect("src/nl/littlerobots/test/test.kt:8: Error: Subscriber is missing onError [RxSubscribeOnError]\n" +
                 "    Observable.just(\"test\").blockingSubscribeBy { }\n" +
                 "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
                 "1 errors, 0 warnings");
@@ -1554,7 +1552,7 @@ public class SubscribeDetectorTest extends LintDetectorTest {
                         "private fun handleError(throwable: Throwable) {\n" +
                         "\n" +
                         "}")
-        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(false).run().expectClean();
+        ).issues(SubscribeDetector.ISSUE).allowCompilationErrors(true).run().expectClean();
     }
 
     public void testRxKotlinSubscribeByWithInvokingReferenceExpression() {

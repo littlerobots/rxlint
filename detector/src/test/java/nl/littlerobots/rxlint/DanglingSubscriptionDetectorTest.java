@@ -359,7 +359,7 @@ public class DanglingSubscriptionDetectorTest extends LintDetectorTest {
                         "    Observable.just(\"test\").subscribeBy(onError = {})\n" +
                         "    ObservableRx3.just(\"test\").subscribeByRx3(onError = {})\n" +
                         "}")
-        ).issues(DanglingSubscriptionDetector.ISSUE).allowCompilationErrors(false).run().expect("src/nl/littlerobots/test/test.kt:10: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
+        ).issues(DanglingSubscriptionDetector.ISSUE).allowCompilationErrors(true).run().expect("src/nl/littlerobots/test/test.kt:10: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
                 "    Observable.just(\"test\").subscribeBy { }\n" +
                 "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
                 "src/nl/littlerobots/test/test.kt:11: Error: No reference to the disposable is kept [RxLeakedSubscription]\n" +
